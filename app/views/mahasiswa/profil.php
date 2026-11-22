@@ -33,42 +33,40 @@
                 <div class="card-body p-4">
 
                     <!-- Profile Overview Card Banner with Photo Upload -->
-                    <div class="p-4 mb-4 rounded-3 border bg-body-tertiary">
+                    <div class="card border rounded-3 p-3 p-md-4 mb-4 bg-body-tertiary shadow-none">
                         <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
-                            <div class="d-flex align-items-center gap-3.5">
+                            <div class="d-flex align-items-center gap-3">
                                 <div class="position-relative flex-shrink-0" id="avatarPreviewContainer">
-                                    <?= render_avatar($user, 76, 'border border-2 border-primary-subtle shadow-sm') ?>
+                                    <?= render_avatar($user, 72, 'border border-2 border-primary-subtle shadow-sm') ?>
                                 </div>
                                 <div>
-                                    <h3 class="fw-bold text-body mb-1 fs-3"><?= e($user['nama']) ?></h3>
-                                    <div class="text-secondary small d-flex align-items-center gap-2 flex-wrap mb-1.5">
-                                        <span>NIM: <code class="px-1.5 py-0.5 rounded bg-body border text-primary font-monospace"><?= e($user['nim']) ?></code></span>
-                                        <span>&bull;</span>
+                                    <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                                        <h3 class="fw-bold text-body mb-0 fs-3"><?= e($user['nama']) ?></h3>
                                         <span class="badge bg-primary-lt text-primary border border-primary-subtle fw-bold px-2 py-0.5">Kelas <?= e($user['kelas'] ?? 'S5') ?></span>
+                                    </div>
+                                    <div class="text-secondary small d-flex align-items-center gap-2 flex-wrap">
+                                        <span>NIM: <code class="px-1.5 py-0.5 rounded bg-body border text-body font-monospace"><?= e($user['nim']) ?></code></span>
                                         <span>&bull;</span>
                                         <span>Program Studi <?= e(config('prodi', 'Teknologi Informasi')) ?></span>
+                                        <span>&bull;</span>
+                                        <span>Maksimal <strong>2 MB</strong> &bull; Format: JPG, PNG, atau WebP</span>
                                     </div>
-                                    <div class="text-secondary small" style="font-size: 0.8rem;">
-                                        Maksimal <strong>2 MB</strong> &bull; Format: JPG, PNG, atau WebP
-                                    </div>
-                                    <div id="selectedFileName" class="badge bg-primary-lt text-primary mt-2 px-2.5 py-1 text-truncate" style="max-width: 380px; display: none;"></div>
+                                    <div id="fileStatusContainer" style="display: none;" class="mt-2"></div>
                                 </div>
                             </div>
                             
-                            <div class="d-flex flex-wrap align-items-center gap-2 flex-shrink-0 align-self-start align-self-md-center">
-                                <label for="foto" class="btn btn-primary px-3 py-2 shadow-sm d-inline-flex align-items-center gap-1.5 mb-0" style="cursor: pointer;">
+                            <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                                <label for="foto" class="btn btn-primary px-3 py-2 shadow-sm d-inline-flex align-items-center gap-1.5 mb-0" id="btnUploadLabel" style="cursor: pointer;">
                                     <i class="ti ti-camera fs-2"></i>
-                                    <span><?= !empty($user['foto']) ? 'Ganti Foto' : 'Unggah Foto' ?></span>
+                                    <span id="btnUploadText"><?= !empty($user['foto']) ? 'Ganti Foto' : 'Unggah Foto' ?></span>
                                 </label>
                                 <input type="file" id="foto" name="foto" class="d-none" accept="image/jpeg,image/png,image/webp">
                                 
-                                <?php if (!empty($user['foto'])): ?>
-                                    <label class="btn btn-outline-danger px-3 py-2 d-inline-flex align-items-center gap-1.5 mb-0" id="btnHapusFotoLabel" style="cursor: pointer;">
-                                        <input type="checkbox" name="hapus_foto" value="1" id="hapus_foto" class="d-none">
-                                        <i class="ti ti-trash fs-2"></i>
-                                        <span id="textHapusFoto">Hapus Foto</span>
-                                    </label>
-                                <?php endif; ?>
+                                <label class="btn btn-outline-danger px-3 py-2 d-inline-flex align-items-center gap-1.5 mb-0 <?= empty($user['foto']) ? 'd-none' : '' ?>" id="btnHapusFotoLabel" style="cursor: pointer;" title="Hapus Foto Profil">
+                                    <input type="checkbox" name="hapus_foto" value="1" id="hapus_foto" class="d-none">
+                                    <i class="ti ti-trash fs-2"></i>
+                                    <span id="textHapusFoto">Hapus Foto</span>
+                                </label>
                             </div>
                         </div>
                     </div>
@@ -184,10 +182,18 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // Live photo preview
+    // Live photo preview & button text handler
     const fotoInput = document.getElementById('foto');
     const previewContainer = document.getElementById('avatarPreviewContainer');
-    const fileNameDisplay = document.getElementById('selectedFileName');
+    const statusContainer = document.getElementById('fileStatusContainer');
+    const btnUploadText = document.getElementById('btnUploadText');
+    const hapusCheckbox = document.getElementById('hapus_foto');
+    const textHapus = document.getElementById('textHapusFoto');
+    const labelHapus = document.getElementById('btnHapusFotoLabel');
+
+    const originalAvatarHtml = previewContainer ? previewContainer.innerHTML : '';
+    const hasInitialPhoto = <?= !empty($user['foto']) ? 'true' : 'false' ?>;
+
     if (fotoInput && previewContainer) {
         fotoInput.addEventListener('change', function () {
             if (this.files && this.files[0]) {
@@ -199,29 +205,83 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 const reader = new FileReader();
                 reader.onload = function (e) {
-                    previewContainer.innerHTML = '<span class="avatar rounded-circle shadow-sm border border-2 border-primary-subtle flex-shrink-0" style="width: 76px; height: 76px; background-image: url(\'' + e.target.result + '\'); background-size: cover; background-position: center;"></span>';
+                    previewContainer.innerHTML = '<span class="avatar rounded-circle shadow-sm border border-2 border-primary-subtle flex-shrink-0" style="width: 72px; height: 72px; background-image: url(\'' + e.target.result + '\'); background-size: cover; background-position: center;"></span>';
+                    previewContainer.style.opacity = '1';
                 };
                 reader.readAsDataURL(file);
-                if (fileNameDisplay) {
-                    fileNameDisplay.innerHTML = '<i class="ti ti-check me-1"></i> Foto baru dipilih: <strong>' + file.name + '</strong>';
-                    fileNameDisplay.style.display = 'inline-block';
+
+                if (statusContainer) {
+                    statusContainer.innerHTML = '<span class="badge bg-success-lt text-success border border-success-subtle px-2.5 py-1 text-truncate d-inline-flex align-items-center gap-1" style="max-width: 360px;"><i class="ti ti-check"></i> Foto baru dipilih: <strong>' + file.name + '</strong></span>';
+                    statusContainer.style.display = 'block';
+                }
+
+                if (btnUploadText) {
+                    btnUploadText.textContent = 'Ganti Foto';
+                }
+
+                if (labelHapus) {
+                    labelHapus.classList.remove('d-none');
+                    labelHapus.classList.replace('btn-danger', 'btn-outline-danger');
+                }
+                if (hapusCheckbox) {
+                    hapusCheckbox.checked = false;
+                }
+                if (textHapus) {
+                    textHapus.textContent = hasInitialPhoto ? 'Hapus Foto' : 'Batalkan Foto';
                 }
             }
         });
     }
 
-    // Toggle delete photo
-    const hapusCheckbox = document.getElementById('hapus_foto');
-    const textHapus = document.getElementById('textHapusFoto');
-    const labelHapus = document.getElementById('btnHapusFotoLabel');
+    // Toggle delete photo or cancel selection
     if (hapusCheckbox && textHapus && labelHapus) {
+        labelHapus.addEventListener('click', function(e) {
+            // If user previously chose a new file and wants to cancel before saving
+            if (fotoInput && fotoInput.files && fotoInput.files.length > 0 && !hasInitialPhoto) {
+                e.preventDefault();
+                fotoInput.value = '';
+                if (previewContainer) {
+                    previewContainer.innerHTML = originalAvatarHtml;
+                    previewContainer.style.opacity = '1';
+                }
+                if (statusContainer) {
+                    statusContainer.innerHTML = '';
+                    statusContainer.style.display = 'none';
+                }
+                labelHapus.classList.add('d-none');
+                if (btnUploadText) {
+                    btnUploadText.textContent = 'Unggah Foto';
+                }
+                return;
+            }
+        });
+
         hapusCheckbox.addEventListener('change', function() {
             if (this.checked) {
                 labelHapus.classList.replace('btn-outline-danger', 'btn-danger');
                 textHapus.textContent = 'Batal Hapus Foto';
+                if (btnUploadText) {
+                    btnUploadText.textContent = 'Unggah Foto';
+                }
+                if (statusContainer) {
+                    statusContainer.style.display = 'none';
+                }
+                if (fotoInput) {
+                    fotoInput.value = '';
+                }
+                if (previewContainer) {
+                    previewContainer.style.opacity = '0.35';
+                }
             } else {
                 labelHapus.classList.replace('btn-danger', 'btn-outline-danger');
                 textHapus.textContent = 'Hapus Foto';
+                if (btnUploadText) {
+                    btnUploadText.textContent = hasInitialPhoto ? 'Ganti Foto' : 'Unggah Foto';
+                }
+                if (previewContainer) {
+                    previewContainer.style.opacity = '1';
+                    previewContainer.innerHTML = originalAvatarHtml;
+                }
             }
         });
     }

@@ -847,6 +847,41 @@ body[data-bs-theme="dark"] .card-header,
     color: #facc15 !important;
 }
 
+[data-bs-theme="dark"] .text-danger,
+[data-theme="dark"] .text-danger {
+    color: #f87171 !important;
+}
+
+[data-bs-theme="dark"] .border-danger-subtle,
+[data-theme="dark"] .border-danger-subtle {
+    border-color: rgba(248, 113, 113, 0.35) !important;
+}
+
+[data-bs-theme="dark"] .border-success-subtle,
+[data-theme="dark"] .border-success-subtle {
+    border-color: rgba(74, 222, 128, 0.35) !important;
+}
+
+[data-bs-theme="dark"] .border-primary-subtle,
+[data-theme="dark"] .border-primary-subtle {
+    border-color: rgba(56, 189, 248, 0.35) !important;
+}
+
+[data-bs-theme="dark"] .border-warning-subtle,
+[data-theme="dark"] .border-warning-subtle {
+    border-color: rgba(250, 204, 21, 0.35) !important;
+}
+
+[data-bs-theme="dark"] .bg-danger-lt *,
+[data-theme="dark"] .bg-danger-lt * {
+    color: #f87171 !important;
+}
+
+[data-bs-theme="dark"] .bg-success-lt *,
+[data-theme="dark"] .bg-success-lt * {
+    color: #4ade80 !important;
+}
+
 /* Dark Mode Inset & bg-white overrides */
 [data-bs-theme="dark"] .glass-inset,
 [data-theme="dark"] .glass-inset {

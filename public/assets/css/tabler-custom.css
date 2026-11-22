@@ -1060,6 +1060,27 @@ body[data-bs-theme="dark"] .card-header,
     background-color: #1e293b !important;
 }
 
+/* Modern Logout Confirm Button Hover Animation */
+.btn-logout-confirm {
+    background-color: #d63939 !important;
+    border: 1px solid #d63939 !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 6px rgba(214, 57, 57, 0.25);
+    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    cursor: pointer;
+}
+.btn-logout-confirm:hover {
+    background-color: #b02a2a !important;
+    border-color: #b02a2a !important;
+    color: #ffffff !important;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(214, 57, 57, 0.4) !important;
+}
+.btn-logout-confirm:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(214, 57, 57, 0.2) !important;
+}
+
 [data-bs-theme="dark"] .btn-outline-success,
 [data-theme="dark"] .btn-outline-success {
     color: #4ade80 !important;

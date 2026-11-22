@@ -134,13 +134,10 @@
                                         </a>
                                     <?php endif; ?>
                                     <div class="dropdown-divider"></div>
-                                    <form action="/logout" method="POST" class="m-0 p-0">
-                                        <?= csrf_field() ?>
-                                        <button type="submit" class="dropdown-item text-danger d-flex align-items-center gap-2 w-100" onclick="return confirm('Apakah Anda yakin ingin keluar?')">
-                                            <i class="ti ti-logout fs-2"></i>
-                                            <span>Logout</span>
-                                        </button>
-                                    </form>
+                                    <button type="button" class="dropdown-item text-danger d-flex align-items-center gap-2 w-100" data-bs-toggle="modal" data-bs-target="#logoutConfirmModal">
+                                        <i class="ti ti-logout fs-2"></i>
+                                        <span>Logout</span>
+                                    </button>
                                 </div>
                             </div>
                         <?php else: ?>
@@ -364,6 +361,43 @@
                 <!-- 5-Second Countdown Progress Bar Animation at Bottom Edge -->
                 <div class="modal-countdown-track">
                     <div id="flashTimerBar" class="modal-countdown-bar bg-<?= $modalColor ?>"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
+
+    <!-- Logout Confirmation Pop-up Modal (Centered) -->
+    <?php if (is_logged_in()): ?>
+    <div class="modal modal-blur fade" id="logoutConfirmModal" tabindex="-1" role="dialog" aria-labelledby="logoutModalTitle" aria-hidden="true" data-bs-backdrop="true">
+        <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 420px;">
+            <div class="modal-content shadow-lg border-0 text-center p-4 rounded-4 position-relative overflow-hidden">
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                <div class="modal-body p-0 mt-2">
+                    <div class="avatar avatar-xl bg-danger-lt text-danger rounded-circle shadow-sm mx-auto mb-3" style="width: 64px; height: 64px;">
+                        <i class="ti ti-logout" style="font-size: 2.2rem;"></i>
+                    </div>
+                    <h3 class="fw-bold mb-2 fs-2 text-body" id="logoutModalTitle">Konfirmasi Logout</h3>
+                    <p class="text-secondary small mb-4 lh-base" style="font-size: 0.95rem;">
+                        Apakah Anda yakin ingin keluar dari sistem? Anda harus memasukkan kredensial login kembali untuk mengakses akun Anda.
+                    </p>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <button type="button" class="btn btn-outline-secondary w-100 py-2.5 fw-semibold rounded-3 shadow-none d-inline-flex align-items-center justify-content-center gap-1.5" data-bs-dismiss="modal">
+                                <i class="ti ti-x"></i>
+                                <span>Batal</span>
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <form action="/logout" method="POST" class="m-0 p-0" id="formLogoutModal">
+                                <?= csrf_field() ?>
+                                <button type="submit" class="btn btn-danger w-100 py-2.5 fw-semibold rounded-3 shadow-sm d-inline-flex align-items-center justify-content-center gap-1.5 text-white btn-logout-confirm">
+                                    <i class="ti ti-logout"></i>
+                                    <span>Ya, Logout</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

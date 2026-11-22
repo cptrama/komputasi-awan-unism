@@ -30,6 +30,33 @@ $currentKelas = $isEdit ? ($mahasiswa['kelas'] ?? '') : (count($allowedKelas) ==
 [data-theme="dark"] .kelas-dropdown-item.is-selected .item-title {
     color: #60a5fa !important;
 }
+
+/* Button Reset Password with Smooth Hover Animation */
+.btn-reset-password {
+    background-color: #f76707 !important;
+    border: 1px solid #f76707 !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 6px rgba(247, 103, 7, 0.25);
+    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    cursor: pointer;
+}
+.btn-reset-password:hover {
+    background-color: #d9480f !important;
+    border-color: #d9480f !important;
+    color: #ffffff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(247, 103, 7, 0.4) !important;
+}
+.btn-reset-password .ti-rotate-clockwise {
+    transition: transform 0.4s ease;
+}
+.btn-reset-password:hover .ti-rotate-clockwise {
+    transform: rotate(180deg);
+}
+.btn-reset-password:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(247, 103, 7, 0.2) !important;
+}
 </style>
 
 <div class="row">
@@ -190,9 +217,9 @@ $currentKelas = $isEdit ? ($mahasiswa['kelas'] ?? '') : (count($allowedKelas) ==
                     </div>
                 </div>
                 <div class="card-body p-4">
-                    <div class="alert alert-warning border border-warning-subtle small mb-3 rounded-3 d-flex align-items-start gap-2.5 p-3">
-                        <i class="ti ti-info-circle text-warning fs-1 flex-shrink-0 mt-0.5"></i>
-                        <div>
+                    <div class="alert alert-warning border border-warning-subtle small mb-3 rounded-3 d-flex align-items-center gap-2.5 py-2.5 px-3">
+                        <i class="ti ti-info-circle text-warning fs-2 flex-shrink-0"></i>
+                        <div class="lh-sm">
                             Menetapkan password baru untuk <strong><?= e($mahasiswa['nama']) ?></strong> akan mengaktifkan kembali status wajib ganti password pada saat login berikutnya.
                         </div>
                     </div>
@@ -214,7 +241,7 @@ $currentKelas = $isEdit ? ($mahasiswa['kelas'] ?? '') : (count($allowedKelas) ==
                             </div>
                         </div>
                         <div class="d-flex justify-content-end">
-                            <button type="submit" class="btn btn-warning px-4 py-2 fw-semibold shadow-sm rounded-2 text-white d-inline-flex align-items-center gap-1.5" style="background-color: #f76707 !important; border-color: #f76707 !important;" onclick="return confirm('Reset password mahasiswa <?= e(addslashes($mahasiswa['nama'])) ?>?')">
+                            <button type="submit" class="btn btn-reset-password px-4 py-2 fw-semibold rounded-2 text-white d-inline-flex align-items-center gap-1.5 shadow-none" onclick="return confirm('Reset password mahasiswa <?= e(addslashes($mahasiswa['nama'])) ?>?')">
                                 <i class="ti ti-rotate-clockwise fs-2 text-white"></i>
                                 <span class="text-white">Reset Password</span>
                             </button>

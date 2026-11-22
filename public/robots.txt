@@ -1,0 +1,3 @@
+# Internal Application - Block all web crawlers and robots
+User-agent: *
+Disallow: /

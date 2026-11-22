@@ -1,0 +1,22 @@
+# Composer dependencies
+/vendor/
+
+# SQLite Database & temporary WAL files
+/database/*.db
+/database/*.db-wal
+/database/*.db-shm
+!/database/schema.sql
+
+# Storage & Logs
+/storage/logs/*.log
+/storage/uploads/*
+!/storage/uploads/.gitkeep
+!/storage/logs/.gitkeep
+
+# Environment & IDE
+.env
+.env.local
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,10 @@
+Options +FollowSymLinks -Indexes
+RewriteEngine On
+
+# Defense-in-depth: Deny direct HTTP access to internal code and data folders
+RewriteRule ^(app|config|database|storage|scripts|tests|vendor)(\/|$) - [F,NC,L]
+RewriteRule \.(sql|db|log|md|json|lock)$ - [F,NC,L]
+
+# Route requests to public/ folder
+RewriteCond %{REQUEST_URI} !^/public/
+RewriteRule ^(.*)$ public/$1 [L]

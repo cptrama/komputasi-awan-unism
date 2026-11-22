@@ -1,0 +1,15 @@
+.git
+.gitignore
+.env
+.env.*
+.vscode
+.idea
+vendor
+database/*.db
+database/*.db-wal
+database/*.db-shm
+storage/logs/*.log
+storage/uploads/*
+!storage/uploads/.gitkeep
+!storage/logs/.gitkeep
+README.md

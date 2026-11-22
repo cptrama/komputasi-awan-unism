@@ -34,38 +34,39 @@
 
                     <!-- Profile Overview Card Banner with Photo Upload -->
                     <div class="p-4 mb-4 rounded-3 border bg-body-tertiary">
-                        <div class="row align-items-center g-3">
-                            <div class="col-auto">
-                                <div class="position-relative" id="avatarPreviewContainer">
-                                    <?= render_avatar($user, 72, 'border border-2 border-primary-subtle') ?>
+                        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                            <div class="d-flex align-items-center gap-3.5">
+                                <div class="position-relative flex-shrink-0" id="avatarPreviewContainer">
+                                    <?= render_avatar($user, 76, 'border border-2 border-primary-subtle shadow-sm') ?>
+                                </div>
+                                <div>
+                                    <h3 class="fw-bold text-body mb-1 fs-3"><?= e($user['nama']) ?></h3>
+                                    <div class="text-secondary small d-flex align-items-center gap-2 flex-wrap mb-1.5">
+                                        <span>NIDN / Username: <code class="px-1.5 py-0.5 rounded bg-body border text-body font-monospace"><?= e($user['nim']) ?></code></span>
+                                        <span>&bull;</span>
+                                        <span class="badge bg-warning-lt text-warning border border-warning-subtle fw-bold px-2 py-0.5">Dosen Pengampu</span>
+                                    </div>
+                                    <div class="text-secondary small" style="font-size: 0.8rem;">
+                                        Maksimal <strong>2 MB</strong> &bull; Format: JPG, PNG, atau WebP
+                                    </div>
+                                    <div id="selectedFileName" class="badge bg-primary-lt text-primary mt-2 px-2.5 py-1 text-truncate" style="max-width: 380px; display: none;"></div>
                                 </div>
                             </div>
-                            <div class="col">
-                                <h4 class="fw-bold text-body mb-1 fs-3"><?= e($user['nama']) ?></h4>
-                                <div class="text-secondary small d-flex align-items-center gap-2 flex-wrap mb-2.5">
-                                    <span>NIDN / Username: <code class="px-1.5 py-0.5 rounded bg-body border text-body font-monospace"><?= e($user['nim']) ?></code></span>
-                                    <span class="text-secondary">&bull;</span>
-                                    <span class="badge bg-warning-lt text-warning border border-warning-subtle fw-bold px-2 py-0.5">Dosen Pengampu</span>
-                                </div>
-                                <div class="d-flex flex-wrap align-items-center gap-2">
-                                    <label for="foto" class="btn btn-primary btn-sm px-3 shadow-sm d-inline-flex align-items-center gap-1.5 mb-0" style="cursor: pointer;">
-                                        <i class="ti ti-camera fs-2"></i>
-                                        <span>Unggah Foto Profil</span>
+                            
+                            <div class="d-flex flex-wrap align-items-center gap-2 flex-shrink-0 align-self-start align-self-md-center">
+                                <label for="foto" class="btn btn-primary px-3 py-2 shadow-sm d-inline-flex align-items-center gap-1.5 mb-0" style="cursor: pointer;">
+                                    <i class="ti ti-camera fs-2"></i>
+                                    <span><?= !empty($user['foto']) ? 'Ganti Foto' : 'Unggah Foto' ?></span>
+                                </label>
+                                <input type="file" id="foto" name="foto" class="d-none" accept="image/jpeg,image/png,image/webp">
+                                
+                                <?php if (!empty($user['foto'])): ?>
+                                    <label class="btn btn-outline-danger px-3 py-2 d-inline-flex align-items-center gap-1.5 mb-0" id="btnHapusFotoLabel" style="cursor: pointer;">
+                                        <input type="checkbox" name="hapus_foto" value="1" id="hapus_foto" class="d-none">
+                                        <i class="ti ti-trash fs-2"></i>
+                                        <span id="textHapusFoto">Hapus Foto</span>
                                     </label>
-                                    <input type="file" id="foto" name="foto" class="d-none" accept="image/jpeg,image/png,image/webp">
-                                    
-                                    <?php if (!empty($user['foto'])): ?>
-                                        <label class="btn btn-outline-danger btn-sm px-3 d-inline-flex align-items-center gap-1.5 mb-0" id="btnHapusFotoLabel" style="cursor: pointer;">
-                                            <input type="checkbox" name="hapus_foto" value="1" id="hapus_foto" class="d-none">
-                                            <i class="ti ti-trash fs-2"></i>
-                                            <span id="textHapusFoto">Hapus Foto</span>
-                                        </label>
-                                    <?php endif; ?>
-                                </div>
-                                <div id="selectedFileName" class="text-primary small fw-semibold mt-1.5" style="display: none;"></div>
-                                <div class="text-secondary small mt-1" style="font-size: 0.78rem;">
-                                    Format: <strong>JPG, PNG, atau WebP</strong> &bull; Maksimal <strong>2 MB</strong>.
-                                </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -197,12 +198,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 const reader = new FileReader();
                 reader.onload = function (e) {
-                    previewContainer.innerHTML = '<span class="avatar rounded-circle shadow-sm border border-2 border-primary-subtle flex-shrink-0" style="width: 72px; height: 72px; background-image: url(\'' + e.target.result + '\'); background-size: cover; background-position: center;"></span>';
+                    previewContainer.innerHTML = '<span class="avatar rounded-circle shadow-sm border border-2 border-primary-subtle flex-shrink-0" style="width: 76px; height: 76px; background-image: url(\'' + e.target.result + '\'); background-size: cover; background-position: center;"></span>';
                 };
                 reader.readAsDataURL(file);
                 if (fileNameDisplay) {
-                    fileNameDisplay.textContent = 'Foto terpilih: ' + file.name;
-                    fileNameDisplay.style.display = 'block';
+                    fileNameDisplay.innerHTML = '<i class="ti ti-check me-1"></i> Foto baru dipilih: <strong>' + file.name + '</strong>';
+                    fileNameDisplay.style.display = 'inline-block';
                 }
             }
         });

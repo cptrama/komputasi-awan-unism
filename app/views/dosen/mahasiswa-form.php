@@ -115,7 +115,7 @@ $currentKelas = $isEdit ? ($mahasiswa['kelas'] ?? '') : (count($allowedKelas) ==
                                         </label>
                                     <?php endif; ?>
                                 </div>
-                                <div id="selectedFileName" class="text-primary small fw-semibold mt-1" style="display: none;"></div>
+                                <div id="selectedFileName" class="badge bg-primary-lt text-primary mt-1.5 px-2.5 py-1 text-truncate" style="max-width: 320px; display: none;"></div>
                                 <div class="text-secondary small" style="font-size: 0.78rem;">
                                     Format: <strong>JPG, PNG, atau WebP</strong> &bull; Maksimal <strong>2 MB</strong>.
                                 </div>
@@ -328,8 +328,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 };
                 reader.readAsDataURL(file);
                 if (fileNameDisplay) {
-                    fileNameDisplay.textContent = 'Foto terpilih: ' + file.name;
-                    fileNameDisplay.style.display = 'block';
+                    fileNameDisplay.innerHTML = '<i class="ti ti-check me-1"></i> Foto baru dipilih: <strong>' + file.name + '</strong>';
+                    fileNameDisplay.style.display = 'inline-block';
                 }
             }
         });

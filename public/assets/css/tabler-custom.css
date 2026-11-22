@@ -285,6 +285,18 @@ body {
     background-color: #f8fafc !important;
     border-bottom: 1px solid var(--tblr-border-color) !important;
     padding: 0.75rem 1rem !important;
+    vertical-align: middle !important;
+}
+
+.table thead th {
+    vertical-align: middle !important;
+}
+
+.table-th-subtitle {
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    font-size: 0.75rem !important;
+    line-height: 1.25 !important;
 }
 
 .table td {

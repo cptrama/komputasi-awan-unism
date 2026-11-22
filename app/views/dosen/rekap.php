@@ -43,18 +43,18 @@
                         <table class="table table-hover align-middle mb-0 w-100">
                             <thead>
                                 <tr>
-                                    <th scope="col" class="text-center text-secondary text-uppercase fw-bold" style="width: 55px;">No</th>
-                                    <th scope="col" class="text-center text-secondary text-uppercase fw-bold" style="width: 140px;">NIM</th>
-                                    <th scope="col" class="text-secondary text-uppercase fw-bold ps-3">Nama Mahasiswa</th>
+                                    <th scope="col" class="text-center text-secondary text-uppercase fw-bold py-3" style="width: 55px;">No</th>
+                                    <th scope="col" class="text-center text-secondary text-uppercase fw-bold py-3" style="width: 140px;">NIM</th>
+                                    <th scope="col" class="text-secondary text-uppercase fw-bold py-3 ps-3">Nama Mahasiswa</th>
                                     <?php foreach ($tasks as $t): ?>
-                                        <th scope="col" class="text-center" style="min-width: 135px;">
-                                            <span class="badge bg-primary-lt text-primary fw-bold px-2 py-0.5 mb-1">Pertemuan <?= e($t['pertemuan_nomor']) ?></span>
-                                            <div class="small text-body fw-semibold text-truncate mx-auto" style="max-width: 140px;" title="<?= e($t['judul']) ?>">
+                                        <th scope="col" class="text-center py-2.5 px-3" style="min-width: 150px;">
+                                            <div class="fw-bold text-primary fs-3 lh-sm">Pertemuan <?= e($t['pertemuan_nomor']) ?></div>
+                                            <div class="table-th-subtitle text-secondary fw-normal text-truncate mx-auto mt-0.5" style="max-width: 160px;" title="<?= e($t['judul']) ?>">
                                                 <?= e($t['judul']) ?>
                                             </div>
                                         </th>
                                     <?php endforeach; ?>
-                                    <th scope="col" class="text-center text-primary text-uppercase fw-bold" style="width: 120px;">Rata-Rata</th>
+                                    <th scope="col" class="text-center text-primary text-uppercase fw-bold py-3" style="width: 120px;">Rata-Rata</th>
                                 </tr>
                             </thead>
                             <tbody>

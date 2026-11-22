@@ -1,100 +1,224 @@
 <?php ob_start(); ?>
 
-<div class="row mb-3 align-items-center">
-    <div class="col-12 col-md-6">
-        <h4 class="fw-bold mb-1 text-dark d-flex align-items-center gap-2">
-            <i class="bi bi-person-gear text-primary"></i>
-            <span>Pengaturan Profil Dosen</span>
-        </h4>
-        <p class="text-muted small mb-0">Ubah nama lengkap dan perbarui password akun dosen Anda.</p>
-    </div>
-    <div class="col-12 col-md-6 text-md-end mt-2 mt-md-0">
-        <a href="/dosen" class="btn btn-outline-secondary btn-sm">
-            <i class="bi bi-arrow-left me-1"></i> Kembali ke Dashboard
-        </a>
-    </div>
-</div>
+<div class="row">
+    <div class="col-12">
 
-<div class="row justify-content-center">
-    <div class="col-12 col-lg-8 col-xl-7">
-        <div class="glass-card p-3 p-md-4">
-            <div class="d-flex align-items-center gap-3 border-bottom pb-3 mb-3">
-                <div class="d-inline-flex align-items-center justify-content-center rounded-circle p-3" style="background: rgba(0, 122, 255, 0.12); color: #007aff; width: 56px; height: 56px;">
-                    <i class="bi bi-person-vcard fs-3"></i>
-                </div>
-                <div>
-                    <h5 class="fw-bold text-dark mb-0"><?= e($user['nama']) ?></h5>
-                    <div class="small text-muted">
-                        NIDN/NIM: <code><?= e($user['nim']) ?></code> &bull; <span class="badge bg-warning text-dark">Dosen Pengampu</span>
+        <!-- Back Navigation Button -->
+        <div class="mb-3">
+            <a href="/dosen" class="btn btn-card-header-action shadow-none">
+                <i class="ti ti-arrow-left"></i>
+                <span>Kembali ke Dashboard</span>
+            </a>
+        </div>
+
+        <!-- Main Profile Form Card Container -->
+        <div class="card shadow-sm border rounded-3 overflow-hidden mb-4">
+            
+            <!-- Card Header -->
+            <div class="card-header bg-transparent py-3 px-4 border-bottom">
+                <div class="d-flex align-items-center gap-3">
+                    <span class="avatar bg-primary-lt text-primary rounded-circle shadow-sm flex-shrink-0" style="width: 44px; height: 44px;">
+                        <i class="ti ti-user-cog fs-1"></i>
+                    </span>
+                    <div>
+                        <h3 class="card-title fw-bold text-body mb-0 fs-3">Pengaturan Profil Dosen</h3>
+                        <div class="text-secondary small mt-0.5">Ubah nama lengkap dan perbarui password akun dosen Anda.</div>
                     </div>
                 </div>
             </div>
 
-            <form action="/dosen/profil" method="POST" autocomplete="off">
+            <form action="/dosen/profil" method="POST" autocomplete="off" id="formProfilDosen">
                 <?= csrf_field() ?>
 
-                <!-- Identitas Pengguna -->
-                <div class="mb-3">
-                    <label for="nim" class="form-label fw-semibold small text-uppercase text-muted">NIDN / Username</label>
-                    <input type="text" class="form-control" id="nim" value="<?= e($user['nim']) ?>" disabled style="background: rgba(0,0,0,0.04); cursor: not-allowed;">
-                    <div class="form-text small text-muted">NIDN digunakan sebagai ID login dan tidak dapat diubah.</div>
-                </div>
+                <div class="card-body p-4">
 
-                <div class="mb-4">
-                    <label for="nama" class="form-label fw-semibold small text-uppercase text-muted">Nama Lengkap & Gelar <span class="text-danger">*</span></label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                        <input type="text" class="form-control" id="nama" name="nama" value="<?= e($user['nama']) ?>" required placeholder="Contoh: Dr. Fajar Ramadhan, M.Kom">
+                    <!-- Profile Overview Card Banner -->
+                    <div class="p-3 mb-4 rounded-3 border bg-body-tertiary d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="avatar bg-primary text-white rounded-circle shadow-sm flex-shrink-0 fw-bold fs-2" style="width: 48px; height: 48px;">
+                                DO
+                            </span>
+                            <div>
+                                <h4 class="fw-bold text-body mb-0.5 fs-3"><?= e($user['nama']) ?></h4>
+                                <div class="text-secondary small d-flex align-items-center gap-2 flex-wrap">
+                                    <span>NIDN / Username: <code class="px-1.5 py-0.5 rounded bg-body border text-body font-monospace"><?= e($user['nim']) ?></code></span>
+                                    <span class="text-secondary">&bull;</span>
+                                    <span class="badge bg-warning-lt text-warning border border-warning-subtle fw-bold px-2 py-0.5">Dosen Pengampu</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-secondary small d-none d-md-flex align-items-center gap-1.5">
+                            <i class="ti ti-shield-check text-success fs-2"></i>
+                            <span class="fw-medium">Akun Terverifikasi</span>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Bagian Ubah Password -->
-                <div class="p-3 rounded-3 bg-white bg-opacity-60 border mb-4">
-                    <h6 class="fw-bold text-dark mb-1 d-flex align-items-center gap-2">
-                        <i class="bi bi-shield-lock-fill text-primary"></i>
-                        <span>Ubah Password Akun</span>
-                    </h6>
-                    <p class="text-muted small mb-3">Kosongkan kolom di bawah jika Anda tidak ingin mengubah password.</p>
-
+                    <!-- Identitas Pengguna -->
                     <div class="mb-3">
-                        <label for="password_lama" class="form-label fw-semibold small text-uppercase text-muted">Password Saat Ini</label>
+                        <label for="nim" class="form-label fw-bold small text-uppercase text-secondary">
+                            NIDN / Username Login
+                        </label>
                         <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-key"></i></span>
-                            <input type="password" class="form-control" id="password_lama" name="password_lama" placeholder="Masukkan password lama untuk konfirmasi">
+                            <span class="input-group-text bg-body-tertiary"><i class="ti ti-id fs-2 text-secondary"></i></span>
+                            <input type="text" class="form-control bg-body-tertiary font-monospace" id="nim" value="<?= e($user['nim']) ?>" readonly disabled style="cursor: not-allowed;">
+                        </div>
+                        <div class="form-text small text-secondary mt-1">NIDN digunakan sebagai ID login akun resmi dan tidak dapat diubah.</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="nama" class="form-label fw-bold small text-uppercase text-secondary">
+                            Nama Lengkap &amp; Gelar <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-body-tertiary"><i class="ti ti-user fs-2 text-primary"></i></span>
+                            <input type="text" class="form-control" id="nama" name="nama" value="<?= e($user['nama']) ?>" required placeholder="Contoh: Dr. Fajar Ramadhan, M.Kom">
+                        </div>
+                        <div class="form-text small text-secondary mt-1">Nama ini ditampilkan pada kop lembar tugas perkuliahan, rekap nilai, dan akun mahasiswa.</div>
+                    </div>
+
+                    <!-- Bagian Ubah Password Akun -->
+                    <div class="card shadow-none border rounded-3 mb-2 overflow-hidden" style="background: var(--tblr-bg-surface-secondary, rgba(0, 0, 0, 0.02));">
+                        <div class="card-header bg-transparent py-2.5 px-3 border-bottom">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="ti ti-lock-cog text-primary fs-2"></i>
+                                <h4 class="card-title fw-bold text-body mb-0 fs-4">Ubah Password Akun</h4>
+                            </div>
+                        </div>
+                        <div class="card-body p-3 p-md-4">
+                            <div class="alert alert-info border border-info-subtle small mb-3 rounded-3 d-flex align-items-center gap-2.5 py-2.5 px-3">
+                                <i class="ti ti-info-circle text-info fs-2 flex-shrink-0"></i>
+                                <div class="lh-sm">
+                                    Kosongkan seluruh kolom password di bawah jika Anda hanya ingin memperbarui nama profil.
+                                </div>
+                            </div>
+
+                            <!-- Password Saat Ini -->
+                            <div class="mb-3">
+                                <label for="password_lama" class="form-label fw-bold small text-uppercase text-secondary">
+                                    Password Saat Ini
+                                </label>
+                                <div class="position-relative">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-body-tertiary"><i class="ti ti-key fs-2 text-secondary"></i></span>
+                                        <input type="password" class="form-control" id="password_lama" name="password_lama" 
+                                               placeholder="Masukkan password saat ini untuk konfirmasi" autocomplete="current-password" style="padding-right: 2.85rem;">
+                                    </div>
+                                    <button type="button" class="btn btn-link link-secondary p-0 border-0 position-absolute end-0 top-50 translate-middle-y me-3 text-decoration-none shadow-none d-flex align-items-center justify-content-center" id="btn-toggle-old" title="Tampilkan / Sembunyikan Password" tabindex="-1" style="z-index: 5; background: transparent;">
+                                        <i class="ti ti-eye fs-2" id="icon-toggle-old"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-12 col-md-6">
+                                    <label for="password_baru" class="form-label fw-bold small text-uppercase text-secondary">
+                                        Password Baru
+                                    </label>
+                                    <div class="position-relative">
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-body-tertiary"><i class="ti ti-lock fs-2 text-secondary"></i></span>
+                                            <input type="password" class="form-control" id="password_baru" name="password_baru" 
+                                                   placeholder="Minimal 6 karakter" autocomplete="new-password" minlength="6" style="padding-right: 2.85rem;">
+                                        </div>
+                                        <button type="button" class="btn btn-link link-secondary p-0 border-0 position-absolute end-0 top-50 translate-middle-y me-3 text-decoration-none shadow-none d-flex align-items-center justify-content-center" id="btn-toggle-new" title="Tampilkan / Sembunyikan Password" tabindex="-1" style="z-index: 5; background: transparent;">
+                                            <i class="ti ti-eye fs-2" id="icon-toggle-new"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label for="konfirmasi_password" class="form-label fw-bold small text-uppercase text-secondary">
+                                        Ulangi Password Baru
+                                    </label>
+                                    <div class="position-relative">
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-body-tertiary"><i class="ti ti-shield-check fs-2 text-secondary"></i></span>
+                                            <input type="password" class="form-control" id="konfirmasi_password" name="konfirmasi_password" 
+                                                   placeholder="Ulangi password baru" autocomplete="new-password" minlength="6" style="padding-right: 2.85rem;">
+                                        </div>
+                                        <button type="button" class="btn btn-link link-secondary p-0 border-0 position-absolute end-0 top-50 translate-middle-y me-3 text-decoration-none shadow-none d-flex align-items-center justify-content-center" id="btn-toggle-confirm" title="Tampilkan / Sembunyikan Password" tabindex="-1" style="z-index: 5; background: transparent;">
+                                            <i class="ti ti-eye fs-2" id="icon-toggle-confirm"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="row g-2">
-                        <div class="col-12 col-md-6 mb-2 mb-md-0">
-                            <label for="password_baru" class="form-label fw-semibold small text-uppercase text-muted">Password Baru</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                                <input type="password" class="form-control" id="password_baru" name="password_baru" placeholder="Minimal 6 karakter">
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <label for="konfirmasi_password" class="form-label fw-semibold small text-uppercase text-muted">Ulangi Password Baru</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-check2-circle"></i></span>
-                                <input type="password" class="form-control" id="konfirmasi_password" name="konfirmasi_password" placeholder="Ulangi password baru">
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
-                <!-- Tombol Submit -->
-                <div class="d-flex justify-content-end gap-2">
-                    <a href="/dosen" class="btn btn-outline-secondary btn-sm px-3">Batal</a>
-                    <button type="submit" class="btn btn-primary btn-sm px-3 fw-semibold shadow-sm">
-                        <i class="bi bi-check-circle me-1"></i> Simpan Perubahan Profil
+                <!-- Card Footer Actions -->
+                <div class="card-footer bg-transparent border-top py-3 px-4 d-flex justify-content-end align-items-center gap-2">
+                    <a href="/dosen" class="btn btn-outline-secondary px-4 py-2 fw-semibold rounded-2 d-inline-flex align-items-center gap-1.5 shadow-none">
+                        <i class="ti ti-x"></i>
+                        <span>Batal</span>
+                    </a>
+                    <button type="submit" class="btn btn-primary px-4 py-2 fw-semibold shadow-sm rounded-2 text-white d-inline-flex align-items-center gap-1.5">
+                        <i class="ti ti-device-floppy fs-2"></i>
+                        <span>Simpan Perubahan Profil</span>
                     </button>
                 </div>
             </form>
         </div>
+
     </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Password visibility toggle helper
+    function setupToggle(btnId, iconId, inputId) {
+        const btn   = document.getElementById(btnId);
+        const input = document.getElementById(inputId);
+        const icon  = document.getElementById(iconId);
+        if (!btn || !input || !icon) return;
+
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            const isPassword = (input.type === 'password');
+            input.type = isPassword ? 'text' : 'password';
+            icon.classList.toggle('ti-eye', !isPassword);
+            icon.classList.toggle('ti-eye-off', isPassword);
+        });
+    }
+
+    setupToggle('btn-toggle-old',     'icon-toggle-old',     'password_lama');
+    setupToggle('btn-toggle-new',     'icon-toggle-new',     'password_baru');
+    setupToggle('btn-toggle-confirm', 'icon-toggle-confirm', 'konfirmasi_password');
+
+    // Client-side confirmation check
+    const form = document.getElementById('formProfilDosen');
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            const passBaru = document.getElementById('password_baru').value;
+            const passKonf = document.getElementById('konfirmasi_password').value;
+            const passLama = document.getElementById('password_lama').value;
+
+            if (passBaru.length > 0 || passKonf.length > 0) {
+                if (!passLama) {
+                    e.preventDefault();
+                    alert('Silakan masukkan password saat ini untuk mengonfirmasi penggantian password.');
+                    document.getElementById('password_lama').focus();
+                    return;
+                }
+                if (passBaru.length < 6) {
+                    e.preventDefault();
+                    alert('Password baru minimal harus 6 karakter.');
+                    document.getElementById('password_baru').focus();
+                    return;
+                }
+                if (passBaru !== passKonf) {
+                    e.preventDefault();
+                    alert('Konfirmasi password baru tidak cocok. Silakan periksa kembali.');
+                    document.getElementById('konfirmasi_password').focus();
+                    return;
+                }
+            }
+        });
+    }
+});
+</script>
+
 <?php 
 $body = ob_get_clean(); 
-Flight::render('layout', ['body' => $body, 'title' => $title ?? 'Profil Dosen']);
+Flight::render('layout', ['body' => $body, 'title' => $title ?? 'Pengaturan Profil Dosen']);
 ?>

@@ -190,7 +190,7 @@ $currentKelas = $isEdit ? ($mahasiswa['kelas'] ?? '') : (count($allowedKelas) ==
                 </div>
 
                 <div class="card-footer bg-transparent border-top py-3 px-4 d-flex justify-content-end align-items-center gap-2">
-                    <a href="/dosen/mahasiswa" class="btn btn-outline-secondary text-body px-4 py-2 fw-semibold rounded-2 d-inline-flex align-items-center gap-1.5 shadow-none">
+                    <a href="/dosen/mahasiswa" class="btn btn-outline-secondary px-4 py-2 fw-semibold rounded-2 d-inline-flex align-items-center gap-1.5 shadow-none">
                         <i class="ti ti-x"></i>
                         <span>Batal</span>
                     </a>

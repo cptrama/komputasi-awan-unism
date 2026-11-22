@@ -1,6 +1,9 @@
 <?php ob_start(); ?>
 
-<?php $allowedKelas = config('kelas_list', ['S5']); ?>
+<?php 
+$allowedKelas = config('kelas_list', ['S5']); 
+$currentKelas = $isEdit ? ($mahasiswa['kelas'] ?? '') : (count($allowedKelas) === 1 ? $allowedKelas[0] : '');
+?>
 
 <div class="row">
     <div class="col-12">
@@ -31,7 +34,7 @@
                 </div>
             </div>
 
-            <form action="<?= $isEdit ? '/dosen/mahasiswa/' . $mahasiswa['id'] : '/dosen/mahasiswa' ?>" method="POST" autocomplete="off">
+            <form action="<?= $isEdit ? '/dosen/mahasiswa/' . $mahasiswa['id'] : '/dosen/mahasiswa' ?>" method="POST" autocomplete="off" id="formMahasiswa">
                 <?= csrf_field() ?>
 
                 <div class="card-body p-4">
@@ -61,20 +64,64 @@
                         </div>
                     </div>
 
+                    <!-- Modern Custom Dropdown: Penempatan Kelas -->
                     <div class="mb-3">
-                        <label for="kelas" class="form-label fw-bold small text-uppercase text-secondary">
+                        <label class="form-label fw-bold small text-uppercase text-secondary">
                             Penempatan Kelas <span class="text-danger">*</span>
                         </label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-body-tertiary"><i class="ti ti-school fs-2 text-primary"></i></span>
-                            <select id="kelas" name="kelas" class="form-select" required>
-                                <option value="">-- Pilih Kelas Perkuliahan --</option>
-                                <?php foreach ($allowedKelas as $k): ?>
-                                    <option value="<?= e($k) ?>" <?= ($isEdit && $mahasiswa['kelas'] === $k) ? 'selected' : '' ?>>
-                                        Kelas <?= e($k) ?>
-                                    </option>
+
+                        <!-- Hidden Input for Form Submission -->
+                        <input type="hidden" id="kelas" name="kelas" value="<?= e($currentKelas) ?>">
+
+                        <!-- Custom Dropdown Button & Menu -->
+                        <div class="dropdown w-100" id="kelasDropdownWrapper">
+                            <button type="button" 
+                                    class="form-control form-select text-start d-flex align-items-center justify-content-between py-2 px-3 shadow-none bg-body" 
+                                    id="kelasDropdownBtn" 
+                                    data-bs-toggle="dropdown" 
+                                    data-bs-auto-close="true"
+                                    aria-expanded="false"
+                                    style="cursor: pointer; min-height: 44px;">
+                                <div class="d-flex align-items-center gap-2 text-truncate me-2" id="kelasDropdownSelected">
+                                    <span class="avatar avatar-sm bg-primary-lt text-primary rounded-2 flex-shrink-0" style="width: 28px; height: 28px;">
+                                        <i class="ti ti-school fs-2"></i>
+                                    </span>
+                                    <?php if (!empty($currentKelas)): ?>
+                                        <span class="fw-semibold text-body">Kelas <?= e($currentKelas) ?></span>
+                                        <span class="badge bg-primary-lt text-primary border border-primary-subtle ms-1">Program Studi <?= e(config('prodi', 'Teknologi Informasi')) ?></span>
+                                    <?php else: ?>
+                                        <span class="text-secondary">-- Pilih Kelas Perkuliahan --</span>
+                                    <?php endif; ?>
+                                </div>
+                            </button>
+
+                            <ul class="dropdown-menu w-100 shadow-lg border p-2 mt-1 rounded-3" id="kelasDropdownList" aria-labelledby="kelasDropdownBtn">
+                                <?php foreach ($allowedKelas as $k): 
+                                    $isSelected = ($currentKelas === $k);
+                                ?>
+                                    <li class="mb-1">
+                                        <button type="button" 
+                                                class="dropdown-item kelas-dropdown-item rounded-2 p-2.5 d-flex align-items-center justify-content-between <?= $isSelected ? 'is-selected active bg-primary text-white' : '' ?>"
+                                                data-kelas="<?= e($k) ?>"
+                                                onclick="selectKelas('<?= e(addslashes($k)) ?>')">
+                                            <div class="d-flex align-items-center gap-2.5">
+                                                <span class="avatar avatar-sm item-avatar <?= $isSelected ? 'bg-white text-primary' : 'bg-primary-lt text-primary' ?> rounded-2 fw-bold flex-shrink-0" style="width: 32px; height: 32px;">
+                                                    <i class="ti ti-school fs-2"></i>
+                                                </span>
+                                                <div class="text-start">
+                                                    <div class="item-title fw-bold <?= $isSelected ? 'text-white' : 'text-body' ?>">Kelas <?= e($k) ?></div>
+                                                    <div class="item-subtitle small <?= $isSelected ? 'text-white-50' : 'text-secondary' ?>">Program Studi <?= e(config('prodi', 'Teknologi Informasi')) ?></div>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2 item-status">
+                                                <?php if ($isSelected): ?>
+                                                    <i class="ti ti-check text-white fs-2 item-check"></i>
+                                                <?php endif; ?>
+                                            </div>
+                                        </button>
+                                    </li>
                                 <?php endforeach; ?>
-                            </select>
+                            </ul>
                         </div>
                     </div>
 
@@ -83,11 +130,13 @@
                             <label for="password" class="form-label fw-bold small text-uppercase text-secondary">
                                 Password Awal Akun <span class="text-danger">*</span>
                             </label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-body-tertiary"><i class="ti ti-lock fs-2 text-primary"></i></span>
-                                <input type="password" id="password" name="password" class="form-control"
-                                       placeholder="Minimal 6 karakter" required minlength="6" autocomplete="new-password">
-                                <button type="button" class="btn btn-outline-secondary text-body" id="btn-toggle-pass" tabindex="-1" title="Lihat/Sembunyikan Password">
+                            <div class="position-relative">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-body-tertiary"><i class="ti ti-lock fs-2 text-primary"></i></span>
+                                    <input type="password" id="password" name="password" class="form-control"
+                                           placeholder="Minimal 6 karakter" required minlength="6" autocomplete="new-password" style="padding-right: 2.85rem;">
+                                </div>
+                                <button type="button" class="btn btn-link link-secondary p-0 border-0 position-absolute end-0 top-50 translate-middle-y me-3 text-decoration-none shadow-none d-flex align-items-center justify-content-center" id="btn-toggle-pass" title="Tampilkan / Sembunyikan Password" tabindex="-1" style="z-index: 5; background: transparent;">
                                     <i class="ti ti-eye fs-2" id="icon-toggle-pass"></i>
                                 </button>
                             </div>
@@ -136,11 +185,13 @@
                             <label for="password_baru" class="form-label fw-bold small text-uppercase text-secondary">
                                 Password Baru <span class="text-danger">*</span>
                             </label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-body-tertiary"><i class="ti ti-lock fs-2 text-warning"></i></span>
-                                <input type="password" id="password_baru" name="password_baru" class="form-control"
-                                       placeholder="Minimal 6 karakter" required minlength="6" autocomplete="new-password">
-                                <button type="button" class="btn btn-outline-secondary text-body" id="btn-toggle-reset" tabindex="-1" title="Lihat/Sembunyikan Password">
+                            <div class="position-relative">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-body-tertiary"><i class="ti ti-lock fs-2 text-warning"></i></span>
+                                    <input type="password" id="password_baru" name="password_baru" class="form-control"
+                                           placeholder="Minimal 6 karakter" required minlength="6" autocomplete="new-password" style="padding-right: 2.85rem;">
+                                </div>
+                                <button type="button" class="btn btn-link link-secondary p-0 border-0 position-absolute end-0 top-50 translate-middle-y me-3 text-decoration-none shadow-none d-flex align-items-center justify-content-center" id="btn-toggle-reset" title="Tampilkan / Sembunyikan Password" tabindex="-1" style="z-index: 5; background: transparent;">
                                     <i class="ti ti-eye fs-2" id="icon-toggle-reset"></i>
                                 </button>
                             </div>
@@ -160,25 +211,84 @@
 </div>
 
 <script>
+function selectKelas(kelasName) {
+    const hiddenInput = document.getElementById('kelas');
+    if (hiddenInput) hiddenInput.value = kelasName;
+
+    const selectedContainer = document.getElementById('kelasDropdownSelected');
+    if (selectedContainer) {
+        selectedContainer.innerHTML = 
+            '<span class="avatar avatar-sm bg-primary-lt text-primary rounded-2 flex-shrink-0" style="width: 28px; height: 28px;">' +
+                '<i class="ti ti-school fs-2"></i>' +
+            '</span>' +
+            '<span class="fw-semibold text-body">Kelas ' + kelasName + '</span>' +
+            '<span class="badge bg-primary-lt text-primary border border-primary-subtle ms-1">Program Studi <?= e(addslashes(config("prodi", "Teknologi Informasi"))) ?></span>';
+    }
+
+    const items = document.querySelectorAll('#kelasDropdownList .kelas-dropdown-item');
+    items.forEach(item => {
+        const isCurrent = item.getAttribute('data-kelas') === kelasName;
+        item.classList.toggle('active', isCurrent);
+        item.classList.toggle('bg-primary', isCurrent);
+        item.classList.toggle('text-white', isCurrent);
+        item.classList.toggle('is-selected', isCurrent);
+
+        const avatar = item.querySelector('.item-avatar');
+        if (avatar) {
+            avatar.className = 'avatar avatar-sm item-avatar rounded-2 fw-bold flex-shrink-0 ' + 
+                (isCurrent ? 'bg-white text-primary' : 'bg-primary-lt text-primary');
+        }
+
+        const title = item.querySelector('.item-title');
+        if (title) {
+            title.className = 'item-title fw-bold ' + (isCurrent ? 'text-white' : 'text-body');
+        }
+
+        const sub = item.querySelector('.item-subtitle');
+        if (sub) {
+            sub.className = 'item-subtitle small ' + (isCurrent ? 'text-white-50' : 'text-secondary');
+        }
+
+        const statusBox = item.querySelector('.item-status');
+        if (statusBox) {
+            statusBox.innerHTML = isCurrent ? '<i class="ti ti-check text-white fs-2 item-check"></i>' : '';
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function () {
+    // Password visibility toggle helper
     function togglePass(btnId, iconId, inputId) {
-        const btn = document.getElementById(btnId);
-        if (!btn) return;
-        btn.addEventListener('click', function () {
-            const input = document.getElementById(inputId);
-            const icon  = document.getElementById(iconId);
-            if (!input || !icon) return;
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.className = 'ti ti-eye-off fs-2';
-            } else {
-                input.type = 'password';
-                icon.className = 'ti ti-eye fs-2';
+        const btn   = document.getElementById(btnId);
+        const input = document.getElementById(inputId);
+        const icon  = document.getElementById(iconId);
+        if (!btn || !input || !icon) return;
+
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            const isPassword = (input.type === 'password');
+            input.type = isPassword ? 'text' : 'password';
+            icon.classList.toggle('ti-eye', !isPassword);
+            icon.classList.toggle('ti-eye-off', isPassword);
+        });
+    }
+
+    togglePass('btn-toggle-pass',  'icon-toggle-pass',  'password');
+    togglePass('btn-toggle-reset', 'icon-toggle-reset', 'password_baru');
+
+    // Validation check before form submit
+    const mainForm = document.getElementById('formMahasiswa');
+    if (mainForm) {
+        mainForm.addEventListener('submit', function (e) {
+            const kelasInput = document.getElementById('kelas');
+            if (kelasInput && !kelasInput.value.trim()) {
+                e.preventDefault();
+                alert('Silakan pilih penempatan kelas perkuliahan terlebih dahulu.');
+                const dropdownBtn = document.getElementById('kelasDropdownBtn');
+                if (dropdownBtn) dropdownBtn.focus();
             }
         });
     }
-    togglePass('btn-toggle-pass',  'icon-toggle-pass',  'password');
-    togglePass('btn-toggle-reset', 'icon-toggle-reset', 'password_baru');
 });
 </script>
 

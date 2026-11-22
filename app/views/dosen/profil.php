@@ -27,29 +27,46 @@
                 </div>
             </div>
 
-            <form action="/dosen/profil" method="POST" autocomplete="off" id="formProfilDosen">
+            <form action="/dosen/profil" method="POST" enctype="multipart/form-data" autocomplete="off" id="formProfilDosen">
                 <?= csrf_field() ?>
 
                 <div class="card-body p-4">
 
-                    <!-- Profile Overview Card Banner -->
-                    <div class="p-3 mb-4 rounded-3 border bg-body-tertiary d-flex flex-wrap align-items-center justify-content-between gap-3">
-                        <div class="d-flex align-items-center gap-3">
-                            <span class="avatar bg-primary text-white rounded-circle shadow-sm flex-shrink-0 fw-bold fs-2" style="width: 48px; height: 48px;">
-                                DO
-                            </span>
-                            <div>
-                                <h4 class="fw-bold text-body mb-0.5 fs-3"><?= e($user['nama']) ?></h4>
-                                <div class="text-secondary small d-flex align-items-center gap-2 flex-wrap">
+                    <!-- Profile Overview Card Banner with Photo Upload -->
+                    <div class="p-4 mb-4 rounded-3 border bg-body-tertiary">
+                        <div class="row align-items-center g-3">
+                            <div class="col-auto">
+                                <div class="position-relative" id="avatarPreviewContainer">
+                                    <?= render_avatar($user, 72, 'border border-2 border-primary-subtle') ?>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <h4 class="fw-bold text-body mb-1 fs-3"><?= e($user['nama']) ?></h4>
+                                <div class="text-secondary small d-flex align-items-center gap-2 flex-wrap mb-2.5">
                                     <span>NIDN / Username: <code class="px-1.5 py-0.5 rounded bg-body border text-body font-monospace"><?= e($user['nim']) ?></code></span>
                                     <span class="text-secondary">&bull;</span>
                                     <span class="badge bg-warning-lt text-warning border border-warning-subtle fw-bold px-2 py-0.5">Dosen Pengampu</span>
                                 </div>
+                                <div class="d-flex flex-wrap align-items-center gap-2">
+                                    <label for="foto" class="btn btn-primary btn-sm px-3 shadow-sm d-inline-flex align-items-center gap-1.5 mb-0" style="cursor: pointer;">
+                                        <i class="ti ti-camera fs-2"></i>
+                                        <span>Unggah Foto Profil</span>
+                                    </label>
+                                    <input type="file" id="foto" name="foto" class="d-none" accept="image/jpeg,image/png,image/webp">
+                                    
+                                    <?php if (!empty($user['foto'])): ?>
+                                        <label class="btn btn-outline-danger btn-sm px-3 d-inline-flex align-items-center gap-1.5 mb-0" id="btnHapusFotoLabel" style="cursor: pointer;">
+                                            <input type="checkbox" name="hapus_foto" value="1" id="hapus_foto" class="d-none">
+                                            <i class="ti ti-trash fs-2"></i>
+                                            <span id="textHapusFoto">Hapus Foto</span>
+                                        </label>
+                                    <?php endif; ?>
+                                </div>
+                                <div id="selectedFileName" class="text-primary small fw-semibold mt-1.5" style="display: none;"></div>
+                                <div class="text-secondary small mt-1" style="font-size: 0.78rem;">
+                                    Format: <strong>JPG, PNG, atau WebP</strong> &bull; Maksimal <strong>2 MB</strong>.
+                                </div>
                             </div>
-                        </div>
-                        <div class="text-secondary small d-none d-md-flex align-items-center gap-1.5">
-                            <i class="ti ti-shield-check text-success fs-2"></i>
-                            <span class="fw-medium">Akun Terverifikasi</span>
                         </div>
                     </div>
 
@@ -165,6 +182,48 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    // Live photo preview
+    const fotoInput = document.getElementById('foto');
+    const previewContainer = document.getElementById('avatarPreviewContainer');
+    const fileNameDisplay = document.getElementById('selectedFileName');
+    if (fotoInput && previewContainer) {
+        fotoInput.addEventListener('change', function () {
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('Ukuran file foto maksimal 2 MB.');
+                    this.value = '';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewContainer.innerHTML = '<span class="avatar rounded-circle shadow-sm border border-2 border-primary-subtle flex-shrink-0" style="width: 72px; height: 72px; background-image: url(\'' + e.target.result + '\'); background-size: cover; background-position: center;"></span>';
+                };
+                reader.readAsDataURL(file);
+                if (fileNameDisplay) {
+                    fileNameDisplay.textContent = 'Foto terpilih: ' + file.name;
+                    fileNameDisplay.style.display = 'block';
+                }
+            }
+        });
+    }
+
+    // Toggle delete photo
+    const hapusCheckbox = document.getElementById('hapus_foto');
+    const textHapus = document.getElementById('textHapusFoto');
+    const labelHapus = document.getElementById('btnHapusFotoLabel');
+    if (hapusCheckbox && textHapus && labelHapus) {
+        hapusCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                labelHapus.classList.replace('btn-outline-danger', 'btn-danger');
+                textHapus.textContent = 'Batal Hapus Foto';
+            } else {
+                labelHapus.classList.replace('btn-danger', 'btn-outline-danger');
+                textHapus.textContent = 'Hapus Foto';
+            }
+        });
+    }
+
     // Password visibility toggle helper
     function setupToggle(btnId, iconId, inputId) {
         const btn   = document.getElementById(btnId);

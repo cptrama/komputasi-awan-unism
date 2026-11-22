@@ -181,7 +181,10 @@
                                             <code class="text-primary fw-bold font-monospace" style="font-size: 0.8rem;"><?= e($sub['nim']) ?></code>
                                         </td>
                                         <td>
-                                            <div class="fw-bold text-dark text-truncate" style="max-width: 190px;" title="<?= e($sub['nama']) ?>"><?= e($sub['nama']) ?></div>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <?= render_avatar($sub, 26) ?>
+                                                <div class="fw-bold text-dark text-truncate" style="max-width: 175px;" title="<?= e($sub['nama']) ?>"><?= e($sub['nama']) ?></div>
+                                            </div>
                                         </td>
                                         <td class="text-center">
                                             <?php if (!empty($sub['pengumpulan_id'])): ?>
@@ -306,9 +309,7 @@
                             <div class="p-3 bg-body-tertiary rounded-3 mb-3 border">
                                 <div class="d-flex align-items-center justify-content-between mb-2">
                                     <div class="d-flex align-items-center gap-2">
-                                        <span class="avatar avatar-sm bg-primary-lt text-primary rounded-circle fw-bold">
-                                            <?= strtoupper(substr($sub['nama'], 0, 1)) ?>
-                                        </span>
+                                        <?= render_avatar($sub, 36) ?>
                                         <div>
                                             <div class="fw-bold text-body fs-3"><?= e($sub['nama']) ?></div>
                                             <code class="text-primary font-monospace small"><?= e($sub['nim']) ?></code>
@@ -388,9 +389,7 @@
                         <div class="modal-body p-4">
                             <div class="p-3 bg-body-tertiary rounded-3 mb-3 border">
                                 <div class="d-flex align-items-center gap-2 mb-1">
-                                    <span class="avatar avatar-sm bg-primary-lt text-primary rounded-circle fw-bold">
-                                        <?= strtoupper(substr($sub['nama'], 0, 1)) ?>
-                                    </span>
+                                    <?= render_avatar($sub, 36) ?>
                                     <div>
                                         <div class="fw-bold text-body fs-3"><?= e($sub['nama']) ?></div>
                                         <code class="text-primary font-monospace small"><?= e($sub['nim']) ?></code>

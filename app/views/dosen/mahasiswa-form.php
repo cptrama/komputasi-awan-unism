@@ -88,10 +88,41 @@ $currentKelas = $isEdit ? ($mahasiswa['kelas'] ?? '') : (count($allowedKelas) ==
                 </div>
             </div>
 
-            <form action="<?= $isEdit ? '/dosen/mahasiswa/' . $mahasiswa['id'] : '/dosen/mahasiswa' ?>" method="POST" autocomplete="off" id="formMahasiswa">
+            <form action="<?= $isEdit ? '/dosen/mahasiswa/' . $mahasiswa['id'] : '/dosen/mahasiswa' ?>" method="POST" enctype="multipart/form-data" autocomplete="off" id="formMahasiswa">
                 <?= csrf_field() ?>
 
                 <div class="card-body p-4">
+                    <!-- Foto Profil Mahasiswa -->
+                    <div class="mb-4 p-3 rounded-3 border bg-body-tertiary">
+                        <label class="form-label fw-bold small text-uppercase text-secondary mb-2">Foto Profil Mahasiswa</label>
+                        <div class="d-flex flex-wrap align-items-center gap-3">
+                            <div class="position-relative" id="avatarPreviewContainer">
+                                <?= render_avatar($mahasiswa ?? null, 64, 'border border-2 border-primary-subtle') ?>
+                            </div>
+                            <div>
+                                <div class="d-flex flex-wrap align-items-center gap-2 mb-1.5">
+                                    <label for="foto" class="btn btn-primary btn-sm px-3 shadow-sm d-inline-flex align-items-center gap-1.5 mb-0" style="cursor: pointer;">
+                                        <i class="ti ti-camera fs-2"></i>
+                                        <span><?= ($isEdit && !empty($mahasiswa['foto'])) ? 'Ganti Foto' : 'Unggah Foto' ?></span>
+                                    </label>
+                                    <input type="file" id="foto" name="foto" class="d-none" accept="image/jpeg,image/png,image/webp">
+
+                                    <?php if ($isEdit && !empty($mahasiswa['foto'])): ?>
+                                        <label class="btn btn-outline-danger btn-sm px-3 d-inline-flex align-items-center gap-1.5 mb-0" id="btnHapusFotoLabel" style="cursor: pointer;">
+                                            <input type="checkbox" name="hapus_foto" value="1" id="hapus_foto" class="d-none">
+                                            <i class="ti ti-trash fs-2"></i>
+                                            <span id="textHapusFoto">Hapus Foto</span>
+                                        </label>
+                                    <?php endif; ?>
+                                </div>
+                                <div id="selectedFileName" class="text-primary small fw-semibold mt-1" style="display: none;"></div>
+                                <div class="text-secondary small" style="font-size: 0.78rem;">
+                                    Format: <strong>JPG, PNG, atau WebP</strong> &bull; Maksimal <strong>2 MB</strong>.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="mb-3">
                         <label for="nim" class="form-label fw-bold small text-uppercase text-secondary">
                             NIM (Nomor Induk Mahasiswa) <span class="text-danger">*</span>
@@ -278,6 +309,48 @@ function selectKelas(kelasName) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+    // Live photo preview
+    const fotoInput = document.getElementById('foto');
+    const previewContainer = document.getElementById('avatarPreviewContainer');
+    const fileNameDisplay = document.getElementById('selectedFileName');
+    if (fotoInput && previewContainer) {
+        fotoInput.addEventListener('change', function () {
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('Ukuran file foto maksimal 2 MB.');
+                    this.value = '';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewContainer.innerHTML = '<span class="avatar rounded-circle shadow-sm border border-2 border-primary-subtle flex-shrink-0" style="width: 64px; height: 64px; background-image: url(\'' + e.target.result + '\'); background-size: cover; background-position: center;"></span>';
+                };
+                reader.readAsDataURL(file);
+                if (fileNameDisplay) {
+                    fileNameDisplay.textContent = 'Foto terpilih: ' + file.name;
+                    fileNameDisplay.style.display = 'block';
+                }
+            }
+        });
+    }
+
+    // Toggle delete photo
+    const hapusCheckbox = document.getElementById('hapus_foto');
+    const textHapus = document.getElementById('textHapusFoto');
+    const labelHapus = document.getElementById('btnHapusFotoLabel');
+    if (hapusCheckbox && textHapus && labelHapus) {
+        hapusCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                labelHapus.classList.replace('btn-outline-danger', 'btn-danger');
+                textHapus.textContent = 'Batal Hapus Foto';
+            } else {
+                labelHapus.classList.replace('btn-danger', 'btn-outline-danger');
+                textHapus.textContent = 'Hapus Foto';
+            }
+        });
+    }
+
     // Password visibility toggle helper
     function togglePass(btnId, iconId, inputId) {
         const btn   = document.getElementById(btnId);

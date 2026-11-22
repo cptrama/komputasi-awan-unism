@@ -114,9 +114,7 @@
                             <?php $user = auth_user(); ?>
                             <div class="nav-item dropdown">
                                 <a href="#" class="nav-link d-flex align-items-center text-reset p-1 rounded text-decoration-none shadow-none" data-bs-toggle="dropdown" data-bs-display="dynamic" data-bs-offset="0,6" aria-expanded="false" aria-label="Open user menu" style="gap: 12px;">
-                                    <span class="avatar bg-blue text-white rounded shadow-sm flex-shrink-0" style="width: 40px; height: 40px; font-weight: 700; font-size: 1rem;">
-                                        <?= strtoupper(substr($user['nama'], 0, 2)) ?>
-                                    </span>
+                                    <?= render_avatar($user, 40) ?>
                                     <div class="d-none d-xl-flex flex-column text-start justify-content-center" style="gap: 3px;">
                                         <span class="fw-semibold text-dark fs-4" style="line-height: 1.25;"><?= e($user['nama']) ?></span>
                                         <span class="text-secondary small" style="font-size: 0.78rem; line-height: 1.25;">
@@ -125,10 +123,16 @@
                                     </div>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end shadow-sm">
-                                    <a href="<?= is_dosen() ? '/dosen/profil' : '/ganti-password' ?>" class="dropdown-item d-flex align-items-center gap-2">
-                                        <i class="ti <?= is_dosen() ? 'ti-user' : 'ti-key' ?> text-primary fs-2"></i>
-                                        <span><?= is_dosen() ? 'Profil Saya' : 'Ganti Password' ?></span>
+                                    <a href="<?= is_dosen() ? '/dosen/profil' : '/profil' ?>" class="dropdown-item d-flex align-items-center gap-2">
+                                        <i class="ti ti-user text-primary fs-2"></i>
+                                        <span>Profil Saya</span>
                                     </a>
+                                    <?php if (!is_dosen()): ?>
+                                        <a href="/ganti-password" class="dropdown-item d-flex align-items-center gap-2">
+                                            <i class="ti ti-key text-secondary fs-2"></i>
+                                            <span>Ganti Password</span>
+                                        </a>
+                                    <?php endif; ?>
                                     <div class="dropdown-divider"></div>
                                     <form action="/logout" method="POST" class="m-0 p-0">
                                         <?= csrf_field() ?>

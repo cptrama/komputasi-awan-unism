@@ -77,9 +77,7 @@
                                         </td>
                                         <td class="ps-3">
                                             <div class="d-flex align-items-center gap-2">
-                                                <span class="avatar avatar-xs bg-primary-lt text-primary rounded-circle fw-bold fs-5 flex-shrink-0" style="width: 26px; height: 26px; font-size: 0.75rem;">
-                                                    <?= strtoupper(substr($mhs['nama'], 0, 1)) ?>
-                                                </span>
+                                                <?= render_avatar($mhs, 26) ?>
                                                 <span class="fw-semibold text-body"><?= e($mhs['nama']) ?></span>
                                             </div>
                                         </td>

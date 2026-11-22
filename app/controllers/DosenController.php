@@ -676,7 +676,7 @@ class DosenController {
 
         // Query all students in that class and their submission data
         $subStmt = $db->prepare(
-            "SELECT u.id as user_id, u.nim, u.nama, u.kelas,
+            "SELECT u.id as user_id, u.nim, u.nama, u.kelas, u.foto,
                     peng.id as pengumpulan_id, peng.file_simpan, peng.file_asli, peng.waktu_upload, peng.nilai, peng.feedback
              FROM users u
              LEFT JOIN pengumpulan peng ON peng.user_id = u.id AND peng.tugas_id = :tugas_id
@@ -1125,6 +1125,25 @@ class DosenController {
             return;
         }
 
+        // Handle photo upload / deletion
+        $fotoToSave = $currentDosen['foto'] ?? null;
+        $hapusFoto = !empty(Flight::request()->data->hapus_foto);
+
+        if ($hapusFoto) {
+            delete_avatar($currentDosen['foto'] ?? null);
+            $fotoToSave = null;
+        }
+
+        if (!empty($_FILES['foto']) && $_FILES['foto']['error'] !== UPLOAD_ERR_NO_FILE) {
+            try {
+                $fotoToSave = handle_avatar_upload($_FILES['foto'], $currentDosen['foto'] ?? null, 'avatar_dosen');
+            } catch (Throwable $e) {
+                flash('danger', $e->getMessage());
+                Flight::redirect('/dosen/profil');
+                return;
+            }
+        }
+
         // Check if user requested password update
         if (!empty($passwordBaru)) {
             if (empty($passwordLama)) {
@@ -1152,40 +1171,44 @@ class DosenController {
             }
 
             $newHash = password_hash($passwordBaru, PASSWORD_BCRYPT);
-            $updateStmt = $db->prepare("UPDATE users SET nama = :nama, password_hash = :hash WHERE id = :id");
+            $updateStmt = $db->prepare("UPDATE users SET nama = :nama, foto = :foto, password_hash = :hash WHERE id = :id");
             $updateStmt->execute([
                 ':nama' => $nama,
+                ':foto' => $fotoToSave,
                 ':hash' => $newHash,
-                ':id' => $user['id']
+                ':id'   => $user['id']
             ]);
 
             $_SESSION['user']['nama'] = $nama;
+            $_SESSION['user']['foto'] = $fotoToSave;
 
-            log_security('PROFILE_UPDATED', 'Dosen updated name and password', '/dosen/profil', [
+            log_security('PROFILE_UPDATED', 'Dosen updated name, photo, and password', '/dosen/profil', [
                 'user_id' => $user['id'],
                 'nim' => $user['nim']
             ]);
 
-            flash('success', 'Nama lengkap dan password Anda berhasil diperbarui.');
+            flash('success', 'Profil dan password Anda berhasil diperbarui.');
             Flight::redirect('/dosen/profil');
             return;
         }
 
-        // Only update name
-        $updateStmt = $db->prepare("UPDATE users SET nama = :nama WHERE id = :id");
+        // Only update name & photo
+        $updateStmt = $db->prepare("UPDATE users SET nama = :nama, foto = :foto WHERE id = :id");
         $updateStmt->execute([
             ':nama' => $nama,
-            ':id' => $user['id']
+            ':foto' => $fotoToSave,
+            ':id'   => $user['id']
         ]);
 
         $_SESSION['user']['nama'] = $nama;
+        $_SESSION['user']['foto'] = $fotoToSave;
 
-        log_security('PROFILE_UPDATED', 'Dosen updated name', '/dosen/profil', [
+        log_security('PROFILE_UPDATED', 'Dosen updated profile', '/dosen/profil', [
             'user_id' => $user['id'],
             'nim' => $user['nim']
         ]);
 
-        flash('success', 'Nama lengkap profil Anda berhasil diperbarui.');
+        flash('success', 'Profil Anda berhasil diperbarui.');
         Flight::redirect('/dosen/profil');
     }
 
@@ -1254,8 +1277,20 @@ class DosenController {
             return;
         }
 
-        $db->prepare("INSERT INTO users (nim, nama, kelas, role, password_hash, wajib_ganti_password) VALUES (:nim, :nama, :kelas, 'mahasiswa', :hash, 1)")
-           ->execute([':nim' => $nim, ':nama' => $nama, ':kelas' => $kelas, ':hash' => password_hash($pass, PASSWORD_BCRYPT)]);
+        // Handle optional photo upload for student
+        $fotoName = null;
+        if (!empty($_FILES['foto']) && $_FILES['foto']['error'] !== UPLOAD_ERR_NO_FILE) {
+            try {
+                $fotoName = handle_avatar_upload($_FILES['foto'], null, 'avatar_mhs');
+            } catch (Throwable $e) {
+                flash('danger', $e->getMessage());
+                Flight::redirect('/dosen/mahasiswa/tambah');
+                return;
+            }
+        }
+
+        $db->prepare("INSERT INTO users (nim, nama, kelas, role, password_hash, foto, wajib_ganti_password) VALUES (:nim, :nama, :kelas, 'mahasiswa', :hash, :foto, 1)")
+           ->execute([':nim' => $nim, ':nama' => $nama, ':kelas' => $kelas, ':hash' => password_hash($pass, PASSWORD_BCRYPT), ':foto' => $fotoName]);
 
         flash('success', "Mahasiswa $nama ($nim) berhasil ditambahkan.");
         Flight::redirect('/dosen/mahasiswa');
@@ -1315,8 +1350,24 @@ class DosenController {
             return;
         }
 
-        $db->prepare("UPDATE users SET nim = :nim, nama = :nama, kelas = :kelas WHERE id = :id")
-           ->execute([':nim' => $nim, ':nama' => $nama, ':kelas' => $kelas, ':id' => $id]);
+        $fotoToSave = $mhs['foto'] ?? null;
+        if (!empty(Flight::request()->data->hapus_foto)) {
+            delete_avatar($mhs['foto'] ?? null);
+            $fotoToSave = null;
+        }
+
+        if (!empty($_FILES['foto']) && $_FILES['foto']['error'] !== UPLOAD_ERR_NO_FILE) {
+            try {
+                $fotoToSave = handle_avatar_upload($_FILES['foto'], $mhs['foto'] ?? null, 'avatar_mhs');
+            } catch (Throwable $e) {
+                flash('danger', $e->getMessage());
+                Flight::redirect("/dosen/mahasiswa/$id/edit");
+                return;
+            }
+        }
+
+        $db->prepare("UPDATE users SET nim = :nim, nama = :nama, kelas = :kelas, foto = :foto WHERE id = :id")
+           ->execute([':nim' => $nim, ':nama' => $nama, ':kelas' => $kelas, ':foto' => $fotoToSave, ':id' => $id]);
 
         flash('success', "Data mahasiswa berhasil diperbarui.");
         Flight::redirect('/dosen/mahasiswa');
@@ -1357,6 +1408,9 @@ class DosenController {
         $mhs  = $stmt->fetch();
 
         if ($mhs) {
+            // Delete avatar image
+            delete_avatar($mhs['foto'] ?? null);
+
             // Remove physical submission files
             $subs = $db->prepare("SELECT file_simpan FROM pengumpulan WHERE user_id = :uid");
             $subs->execute([':uid' => $id]);

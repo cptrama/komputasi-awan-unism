@@ -531,4 +531,121 @@ class MahasiswaController {
         fclose($handle);
         exit;
     }
+
+    /**
+     * Display Mahasiswa profile page.
+     */
+    public static function profilView(): void {
+        $user = auth_user();
+        $db = get_db();
+        $stmt = $db->prepare("SELECT * FROM users WHERE id = :id AND role = 'mahasiswa' LIMIT 1");
+        $stmt->execute([':id' => $user['id']]);
+        $userData = $stmt->fetch();
+
+        Flight::render('mahasiswa/profil', [
+            'title' => 'Pengaturan Profil - ' . config('app_name'),
+            'user' => $userData ?: $user
+        ]);
+    }
+
+    /**
+     * Process Mahasiswa profile update (Photo upload & optional password change).
+     */
+    public static function profilSubmit(): void {
+        $user = auth_user();
+        $db = get_db();
+        $stmt = $db->prepare("SELECT * FROM users WHERE id = :id AND role = 'mahasiswa' LIMIT 1");
+        $stmt->execute([':id' => $user['id']]);
+        $currentMhs = $stmt->fetch();
+
+        if (!$currentMhs) {
+            flash('danger', 'Data akun mahasiswa tidak ditemukan.');
+            Flight::redirect('/dashboard');
+            return;
+        }
+
+        $passwordLama = (string)Flight::request()->data->password_lama;
+        $passwordBaru = (string)Flight::request()->data->password_baru;
+        $konfirmasiPassword = (string)Flight::request()->data->konfirmasi_password;
+
+        // Handle photo upload / deletion
+        $fotoToSave = $currentMhs['foto'] ?? null;
+        if (!empty(Flight::request()->data->hapus_foto)) {
+            delete_avatar($currentMhs['foto'] ?? null);
+            $fotoToSave = null;
+        }
+
+        if (!empty($_FILES['foto']) && $_FILES['foto']['error'] !== UPLOAD_ERR_NO_FILE) {
+            try {
+                $fotoToSave = handle_avatar_upload($_FILES['foto'], $currentMhs['foto'] ?? null, 'avatar_mhs');
+            } catch (Throwable $e) {
+                flash('danger', $e->getMessage());
+                Flight::redirect('/profil');
+                return;
+            }
+        }
+
+        // Check if user requested password update
+        if (!empty($passwordBaru)) {
+            if (empty($passwordLama)) {
+                flash('danger', 'Silakan masukkan password saat ini untuk mengonfirmasi perubahan password.');
+                Flight::redirect('/profil');
+                return;
+            }
+
+            if (!password_verify($passwordLama, $currentMhs['password_hash'])) {
+                flash('danger', 'Password saat ini yang Anda masukkan salah.');
+                Flight::redirect('/profil');
+                return;
+            }
+
+            if (strlen($passwordBaru) < 6) {
+                flash('danger', 'Password baru minimal harus 6 karakter.');
+                Flight::redirect('/profil');
+                return;
+            }
+
+            if ($passwordBaru !== $konfirmasiPassword) {
+                flash('danger', 'Konfirmasi password baru tidak cocok.');
+                Flight::redirect('/profil');
+                return;
+            }
+
+            $newHash = password_hash($passwordBaru, PASSWORD_BCRYPT);
+            $updateStmt = $db->prepare("UPDATE users SET foto = :foto, password_hash = :hash WHERE id = :id");
+            $updateStmt->execute([
+                ':foto' => $fotoToSave,
+                ':hash' => $newHash,
+                ':id'   => $user['id']
+            ]);
+
+            $_SESSION['user']['foto'] = $fotoToSave;
+
+            log_security('PROFILE_UPDATED', 'Mahasiswa updated photo and password', '/profil', [
+                'user_id' => $user['id'],
+                'nim' => $user['nim']
+            ]);
+
+            flash('success', 'Foto profil dan password Anda berhasil diperbarui.');
+            Flight::redirect('/profil');
+            return;
+        }
+
+        // Update photo only
+        $updateStmt = $db->prepare("UPDATE users SET foto = :foto WHERE id = :id");
+        $updateStmt->execute([
+            ':foto' => $fotoToSave,
+            ':id'   => $user['id']
+        ]);
+
+        $_SESSION['user']['foto'] = $fotoToSave;
+
+        log_security('PROFILE_UPDATED', 'Mahasiswa updated photo', '/profil', [
+            'user_id' => $user['id'],
+            'nim' => $user['nim']
+        ]);
+
+        flash('success', 'Foto profil Anda berhasil disimpan.');
+        Flight::redirect('/profil');
+    }
 }

@@ -127,6 +127,8 @@ Flight::group('', function() {
     Flight::route('POST /tugas/@id:[0-9]+/upload', [MahasiswaController::class, 'uploadTugas']);
     Flight::route('GET /pengumpulan/@id:[0-9]+/download', [MahasiswaController::class, 'downloadPengumpulan']);
     Flight::route('GET /nilai', [MahasiswaController::class, 'nilaiIndex']);
+    Flight::route('GET /profil', [MahasiswaController::class, 'profilView']);
+    Flight::route('POST /profil', [MahasiswaController::class, 'profilSubmit']);
 }, [MahasiswaMiddleware::class]);
 
 // Dosen Routes

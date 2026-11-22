@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS users (
     kelas TEXT NULL, -- 'S3', 'S5', 'S7' for mahasiswa, NULL for dosen
     role TEXT NOT NULL, -- 'dosen', 'mahasiswa'
     password_hash TEXT NOT NULL,
+    foto TEXT NULL,
     wajib_ganti_password INTEGER DEFAULT 1 NOT NULL
 );
 

@@ -12,6 +12,8 @@
 /storage/uploads/*
 !/storage/uploads/.gitkeep
 !/storage/logs/.gitkeep
+/public/uploads/avatars/*
+!/public/uploads/avatars/.gitkeep
 
 # Environment & IDE
 .env

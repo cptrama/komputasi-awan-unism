@@ -301,3 +301,106 @@ function cleanup_orphaned_uploads(): int {
 
     return $deletedCount;
 }
+
+/**
+ * Returns the URL of the user's avatar, or null if none is uploaded.
+ */
+function user_avatar_url(?array $user): ?string {
+    if (!$user || empty($user['foto'])) {
+        return null;
+    }
+    $filename = basename($user['foto']);
+    $filePath = __DIR__ . '/../public/uploads/avatars/' . $filename;
+    if (file_exists($filePath)) {
+        return '/uploads/avatars/' . e($filename);
+    }
+    return null;
+}
+
+/**
+ * Renders an HTML avatar element (with photo or fallback initial initials).
+ */
+function render_avatar(?array $user, int $size = 40, string $extraClass = ''): string {
+    if (!$user) {
+        return '<span class="avatar ' . e($extraClass) . ' rounded-circle" style="width: ' . $size . 'px; height: ' . $size . 'px;">?</span>';
+    }
+    
+    $avatarUrl = user_avatar_url($user);
+    if ($avatarUrl) {
+        return '<span class="avatar ' . e($extraClass) . ' rounded-circle shadow-sm flex-shrink-0" style="width: ' . $size . 'px; height: ' . $size . 'px; background-image: url(\'' . $avatarUrl . '\'); background-size: cover; background-position: center;"></span>';
+    }
+    
+    $initials = strtoupper(substr($user['nama'] ?? 'User', 0, 2));
+    $bgClass = ($user['role'] ?? '') === 'dosen' ? 'bg-primary text-white' : 'bg-primary-lt text-primary';
+    $fontSize = max(0.7, round($size * 0.024, 2));
+    return '<span class="avatar ' . e($bgClass) . ' ' . e($extraClass) . ' rounded-circle shadow-sm flex-shrink-0 fw-bold" style="width: ' . $size . 'px; height: ' . $size . 'px; font-size: ' . $fontSize . 'rem;">' . e($initials) . '</span>';
+}
+
+/**
+ * Handles avatar file upload with security validation.
+ * Returns filename string on success, or throws Exception on validation error.
+ */
+function handle_avatar_upload(array $file, ?string $oldFoto = null, string $prefix = 'avatar'): ?string {
+    if (empty($file['tmp_name']) || $file['error'] === UPLOAD_ERR_NO_FILE) {
+        return null;
+    }
+
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        throw new InvalidArgumentException('Gagal mengunggah foto profil (Kode Kesalahan: ' . $file['error'] . ').');
+    }
+
+    // Maksimal 2 MB
+    if ($file['size'] > 2 * 1024 * 1024) {
+        throw new InvalidArgumentException('Ukuran foto profil maksimal adalah 2 MB.');
+    }
+
+    // Verifikasi MIME type menggunakan finfo
+    $finfo = new finfo(FILEINFO_MIME_TYPE);
+    $mime = $finfo->file($file['tmp_name']);
+    $allowedMimes = [
+        'image/jpeg' => 'jpg',
+        'image/png'  => 'png',
+        'image/webp' => 'webp'
+    ];
+
+    if (!isset($allowedMimes[$mime])) {
+        throw new InvalidArgumentException('Format foto harus berupa JPG, PNG, atau WebP.');
+    }
+
+    // Pastikan berkas adalah gambar valid
+    $imgInfo = @getimagesize($file['tmp_name']);
+    if ($imgInfo === false) {
+        throw new InvalidArgumentException('Berkas yang diunggah bukan format gambar yang valid.');
+    }
+
+    $ext = $allowedMimes[$mime];
+    $filename = $prefix . '_' . bin2hex(random_bytes(8)) . '_' . time() . '.' . $ext;
+    $targetDir = __DIR__ . '/../public/uploads/avatars';
+
+    if (!is_dir($targetDir)) {
+        mkdir($targetDir, 0755, true);
+    }
+
+    $targetPath = $targetDir . DIRECTORY_SEPARATOR . $filename;
+    if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
+        throw new RuntimeException('Gagal menyimpan berkas foto ke direktori server.');
+    }
+
+    // Hapus foto lama jika ada
+    if ($oldFoto) {
+        delete_avatar($oldFoto);
+    }
+
+    return $filename;
+}
+
+/**
+ * Deletes an avatar file safely.
+ */
+function delete_avatar(?string $filename): void {
+    if (!$filename) return;
+    $targetPath = __DIR__ . '/../public/uploads/avatars/' . basename($filename);
+    if (is_file($targetPath)) {
+        @unlink($targetPath);
+    }
+}

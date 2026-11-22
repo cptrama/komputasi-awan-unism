@@ -575,12 +575,16 @@ header.navbar {
    7. DARK MODE DEFINITION ([data-bs-theme="dark"] & [data-theme="dark"])
    High-Contrast & Refined Palette
    ========================================================================= */
+body[data-bs-theme="dark"],
+body[data-theme="dark"],
 [data-bs-theme="dark"],
 [data-theme="dark"] {
     --tblr-body-bg: #0b1329;
     --tblr-body-color: #f1f5f9;
     --tblr-card-bg: #182234;
-    --tblr-border-color: rgba(255, 255, 255, 0.12);
+    --tblr-border-color: rgba(255, 255, 255, 0.15) !important;
+    --tblr-border-color-translucent: rgba(255, 255, 255, 0.15) !important;
+    --tblr-dark-mode-border-color: rgba(255, 255, 255, 0.15) !important;
 }
 
 [data-bs-theme="dark"] body,
@@ -707,6 +711,50 @@ header.navbar {
     background-color: #182234 !important;
     border: 1px solid rgba(255, 255, 255, 0.15) !important;
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Dark Mode Dividers & Borders (High Contrast & Clear Visibility) */
+body[data-bs-theme="dark"] .border-bottom,
+[data-bs-theme="dark"] .border-bottom,
+[data-theme="dark"] .border-bottom {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+body[data-bs-theme="dark"] .border-top,
+[data-bs-theme="dark"] .border-top,
+[data-theme="dark"] .border-top {
+    border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+body[data-bs-theme="dark"] .border-start,
+[data-bs-theme="dark"] .border-start,
+[data-theme="dark"] .border-start {
+    border-left: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+body[data-bs-theme="dark"] .border-end,
+[data-bs-theme="dark"] .border-end,
+[data-theme="dark"] .border-end {
+    border-right: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+body[data-bs-theme="dark"] .border,
+[data-bs-theme="dark"] .border,
+[data-theme="dark"] .border {
+    border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+body[data-bs-theme="dark"] hr,
+[data-bs-theme="dark"] hr,
+[data-theme="dark"] hr {
+    border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
+    opacity: 1 !important;
+}
+
+body[data-bs-theme="dark"] .card-header,
+[data-bs-theme="dark"] .card-header,
+[data-theme="dark"] .card-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
 }
 
 [data-bs-theme="dark"] .card-footer,

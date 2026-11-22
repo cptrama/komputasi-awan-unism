@@ -1,31 +1,36 @@
 <?php ob_start(); ?>
 
-<div class="row mb-3 align-items-center">
-    <div class="col-md-6">
-        <h3 class="fw-bold mb-0 d-flex align-items-center gap-2">
+<!-- Page Title & Header Action -->
+<div class="row mb-3 mb-md-4 align-items-center">
+    <div class="col-12 col-md-7">
+        <h3 class="fw-bold mb-0 d-flex align-items-center gap-2 text-body fs-2">
             <i class="ti ti-table text-primary"></i>
             <span>Rekap Nilai Tugas Mahasiswa</span>
         </h3>
         <p class="text-secondary small mb-0 mt-1">Matriks nilai perkuliahan Semester 5 dan ekspor laporan ke format CSV.</p>
     </div>
-    <div class="col-md-6 text-md-end mt-3 mt-md-0">
-        <a href="/dosen/rekap/export" class="btn btn-success btn-sm shadow-sm">
-            <i class="ti ti-file-spreadsheet me-1"></i> Ekspor Rekap CSV
+    <div class="col-12 col-md-5 text-md-end mt-3 mt-md-0">
+        <a href="/dosen/rekap/export" class="btn btn-table-action-success py-2 px-3.5 fw-semibold shadow-sm d-inline-flex align-items-center gap-1.5" title="Unduh berkas CSV rekap nilai">
+            <i class="ti ti-file-spreadsheet fs-2"></i>
+            <span>Ekspor Rekap CSV</span>
         </a>
     </div>
 </div>
 
-<!-- Matrix Table -->
+<!-- Matrix Table Card -->
 <div class="row">
     <div class="col-12">
-        <div class="glass-card">
-            <div class="card-header d-flex justify-content-between align-items-center py-2 px-3 px-md-4">
-                <h4 class="card-title mb-0 fw-bold d-flex align-items-center gap-2">
+        <div class="card shadow-sm border rounded-3 overflow-hidden">
+            <div class="card-header bg-transparent d-flex justify-content-between align-items-center py-2.5 px-3 px-md-4 border-bottom">
+                <h4 class="mb-0 fw-bold text-body d-flex align-items-center gap-2 fs-3">
                     <i class="ti ti-report-analytics text-primary"></i>
                     <span>Rekap Nilai Semester 5</span>
                 </h4>
-                <span class="badge bg-secondary"><?= count($students) ?> Mahasiswa &bull; <?= count($tasks) ?> Tugas</span>
+                <span class="badge bg-primary text-white fw-bold px-2.5 py-1">
+                    <?= count($students) ?> Mahasiswa &bull; <?= count($tasks) ?> Tugas
+                </span>
             </div>
+            
             <div class="card-body p-0">
                 <?php if (empty($students)): ?>
                     <div class="text-center py-5 text-secondary">
@@ -35,21 +40,21 @@
                     </div>
                 <?php else: ?>
                     <div class="table-responsive">
-                        <table class="table table-bordered table-hover align-middle mb-0 text-center">
-                            <thead class="align-middle">
+                        <table class="table table-hover align-middle mb-0 w-100">
+                            <thead>
                                 <tr>
-                                    <th scope="col" style="width: 50px;">No</th>
-                                    <th scope="col" style="width: 140px;">NIM</th>
-                                    <th scope="col" class="text-start ps-3">Nama Mahasiswa</th>
+                                    <th scope="col" class="text-center text-secondary text-uppercase fw-bold" style="width: 55px;">No</th>
+                                    <th scope="col" class="text-center text-secondary text-uppercase fw-bold" style="width: 140px;">NIM</th>
+                                    <th scope="col" class="text-secondary text-uppercase fw-bold ps-3">Nama Mahasiswa</th>
                                     <?php foreach ($tasks as $t): ?>
-                                        <th scope="col" title="<?= e($t['judul']) ?>" style="min-width: 110px;">
-                                            <div class="small fw-bold">P<?= e($t['pertemuan_nomor']) ?></div>
-                                            <div class="small text-secondary text-truncate" style="max-width: 120px;">
+                                        <th scope="col" class="text-center" style="min-width: 135px;">
+                                            <span class="badge bg-primary-lt text-primary fw-bold px-2 py-0.5 mb-1">Pertemuan <?= e($t['pertemuan_nomor']) ?></span>
+                                            <div class="small text-body fw-semibold text-truncate mx-auto" style="max-width: 140px;" title="<?= e($t['judul']) ?>">
                                                 <?= e($t['judul']) ?>
                                             </div>
                                         </th>
                                     <?php endforeach; ?>
-                                    <th scope="col" class="text-primary fw-bold" style="width: 110px;">Rata-Rata</th>
+                                    <th scope="col" class="text-center text-primary text-uppercase fw-bold" style="width: 120px;">Rata-Rata</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -66,13 +71,22 @@
                                     $studentGraded = 0;
                                 ?>
                                     <tr>
-                                        <td class="text-secondary small"><?= $idx + 1 ?></td>
-                                        <td><code><?= e($mhs['nim']) ?></code></td>
-                                        <td class="text-start ps-3 fw-semibold"><?= e($mhs['nama']) ?></td>
+                                        <td class="text-center text-secondary small"><?= $idx + 1 ?></td>
+                                        <td class="text-center">
+                                            <code class="text-primary font-monospace"><?= e($mhs['nim']) ?></code>
+                                        </td>
+                                        <td class="ps-3">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="avatar avatar-xs bg-primary-lt text-primary rounded-circle fw-bold fs-5 flex-shrink-0" style="width: 26px; height: 26px; font-size: 0.75rem;">
+                                                    <?= strtoupper(substr($mhs['nama'], 0, 1)) ?>
+                                                </span>
+                                                <span class="fw-semibold text-body"><?= e($mhs['nama']) ?></span>
+                                            </div>
+                                        </td>
                                         <?php foreach ($tasks as $t): 
                                             $val = $gradesMap[$mhs['id']][$t['id']] ?? null;
                                         ?>
-                                            <td>
+                                            <td class="text-center">
                                                 <?php if ($val !== null && $val !== ''): 
                                                     $num = (float)$val;
                                                     $studentTotal += $num;
@@ -80,30 +94,35 @@
                                                     $taskTotals[$t['id']] += $num;
                                                     $taskCountGraded[$t['id']]++;
                                                 ?>
-                                                    <span class="badge bg-success">
+                                                    <span class="badge bg-success-lt text-success fw-bold px-2.5 py-1 fs-4">
                                                         <?= number_format($num, 1) ?>
                                                     </span>
                                                 <?php else: ?>
-                                                    <span class="text-secondary small">-</span>
+                                                    <span class="text-secondary opacity-40">&mdash;</span>
                                                 <?php endif; ?>
                                             </td>
                                         <?php endforeach; ?>
-                                        <td class="fw-bold">
+                                        <td class="text-center">
                                             <?php if ($studentGraded > 0): ?>
-                                                <span class="badge bg-primary">
+                                                <span class="badge bg-primary text-white fw-bold px-2.5 py-1 fs-4">
                                                     <?= number_format($studentTotal / $studentGraded, 2) ?>
                                                 </span>
                                             <?php else: ?>
-                                                <span class="text-secondary small">-</span>
+                                                <span class="text-secondary opacity-40">&mdash;</span>
                                             <?php endif; ?>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>
                             <?php if (!empty($tasks)): ?>
-                                <tfoot class="fw-bold">
+                                <tfoot class="border-top bg-body-tertiary">
                                     <tr>
-                                        <td colspan="3" class="text-end ps-3">Rata-Rata Kelas:</td>
+                                        <td colspan="3" class="text-end py-3 pe-3">
+                                            <div class="d-flex align-items-center justify-content-end gap-1.5 fw-bold text-secondary text-uppercase fs-5">
+                                                <i class="ti ti-calculator fs-2 text-primary"></i>
+                                                <span>Rata-Rata Kelas:</span>
+                                            </div>
+                                        </td>
                                         <?php 
                                         $overallTotal = 0;
                                         $overallGraded = 0;
@@ -114,12 +133,24 @@
                                                 $overallGraded += $taskCountGraded[$t['id']];
                                             }
                                         ?>
-                                            <td>
-                                                <?= $avg !== null ? number_format($avg, 2) : '-' ?>
+                                            <td class="text-center py-3">
+                                                <?php if ($avg !== null): ?>
+                                                    <span class="badge bg-secondary-lt text-body fw-bold px-2.5 py-1 fs-4">
+                                                        <?= number_format($avg, 2) ?>
+                                                    </span>
+                                                <?php else: ?>
+                                                    <span class="text-secondary opacity-40">&mdash;</span>
+                                                <?php endif; ?>
                                             </td>
                                         <?php endforeach; ?>
-                                        <td class="text-primary">
-                                            <?= $overallGraded > 0 ? number_format($overallTotal / $overallGraded, 2) : '-' ?>
+                                        <td class="text-center py-3">
+                                            <?php if ($overallGraded > 0): ?>
+                                                <span class="badge bg-primary text-white fw-bold px-2.5 py-1 fs-4 shadow-sm">
+                                                    <?= number_format($overallTotal / $overallGraded, 2) ?>
+                                                </span>
+                                            <?php else: ?>
+                                                <span class="text-secondary opacity-40">&mdash;</span>
+                                            <?php endif; ?>
                                         </td>
                                     </tr>
                                 </tfoot>

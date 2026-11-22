@@ -22,9 +22,9 @@
     <div class="col-12">
         <div class="d-flex gap-2 flex-wrap align-items-center">
             <span class="small text-secondary fw-bold me-1">Filter Kelas:</span>
-            <a href="/dosen/mahasiswa" class="btn btn-sm rounded-pill px-3 fw-semibold <?= $filterKelas === null ? 'btn-primary' : 'btn-outline-secondary text-body' ?>">Semua</a>
+            <a href="/dosen/mahasiswa" class="btn-filter-pill <?= $filterKelas === null ? 'active' : '' ?>">Semua</a>
             <?php foreach (config('kelas_list', ['S5']) as $k): ?>
-                <a href="/dosen/mahasiswa?kelas=<?= e($k) ?>" class="btn btn-sm rounded-pill px-3 fw-semibold <?= $filterKelas === $k ? 'btn-primary' : 'btn-outline-secondary text-body' ?>">Kelas <?= e($k) ?></a>
+                <a href="/dosen/mahasiswa?kelas=<?= e($k) ?>" class="btn-filter-pill <?= $filterKelas === $k ? 'active' : '' ?>">Kelas <?= e($k) ?></a>
             <?php endforeach; ?>
         </div>
     </div>

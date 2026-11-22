@@ -5,6 +5,33 @@ $allowedKelas = config('kelas_list', ['S5']);
 $currentKelas = $isEdit ? ($mahasiswa['kelas'] ?? '') : (count($allowedKelas) === 1 ? $allowedKelas[0] : '');
 ?>
 
+<style>
+.kelas-dropdown-item {
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+.kelas-dropdown-item:hover {
+    background-color: rgba(0, 0, 0, 0.04) !important;
+}
+.kelas-dropdown-item.is-selected {
+    background-color: rgba(32, 107, 196, 0.08) !important;
+}
+.kelas-dropdown-item.is-selected .item-title {
+    color: var(--tblr-primary, #206bc4) !important;
+}
+[data-bs-theme="dark"] .kelas-dropdown-item:hover,
+[data-theme="dark"] .kelas-dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.06) !important;
+}
+[data-bs-theme="dark"] .kelas-dropdown-item.is-selected,
+[data-theme="dark"] .kelas-dropdown-item.is-selected {
+    background-color: rgba(32, 107, 196, 0.2) !important;
+}
+[data-bs-theme="dark"] .kelas-dropdown-item.is-selected .item-title,
+[data-theme="dark"] .kelas-dropdown-item.is-selected .item-title {
+    color: #60a5fa !important;
+}
+</style>
+
 <div class="row">
     <div class="col-12">
         
@@ -73,51 +100,41 @@ $currentKelas = $isEdit ? ($mahasiswa['kelas'] ?? '') : (count($allowedKelas) ==
                         <!-- Hidden Input for Form Submission -->
                         <input type="hidden" id="kelas" name="kelas" value="<?= e($currentKelas) ?>">
 
-                        <!-- Custom Dropdown Button & Menu -->
-                        <div class="dropdown w-100" id="kelasDropdownWrapper">
+                        <!-- Input Group with Clean Dropdown -->
+                        <div class="input-group dropdown" id="kelasDropdownWrapper">
+                            <span class="input-group-text bg-body-tertiary">
+                                <i class="ti ti-school fs-2 text-primary"></i>
+                            </span>
                             <button type="button" 
-                                    class="form-control form-select text-start d-flex align-items-center justify-content-between py-2 px-3 shadow-none bg-body" 
+                                    class="form-control form-select text-start d-flex align-items-center justify-content-between shadow-none bg-body" 
                                     id="kelasDropdownBtn" 
                                     data-bs-toggle="dropdown" 
                                     data-bs-auto-close="true"
                                     aria-expanded="false"
-                                    style="cursor: pointer; min-height: 44px;">
-                                <div class="d-flex align-items-center gap-2 text-truncate me-2" id="kelasDropdownSelected">
-                                    <span class="avatar avatar-sm bg-primary-lt text-primary rounded-2 flex-shrink-0" style="width: 28px; height: 28px;">
-                                        <i class="ti ti-school fs-2"></i>
-                                    </span>
-                                    <?php if (!empty($currentKelas)): ?>
-                                        <span class="fw-semibold text-body">Kelas <?= e($currentKelas) ?></span>
-                                        <span class="badge bg-primary-lt text-primary border border-primary-subtle ms-1">Program Studi <?= e(config('prodi', 'Teknologi Informasi')) ?></span>
-                                    <?php else: ?>
-                                        <span class="text-secondary">-- Pilih Kelas Perkuliahan --</span>
-                                    <?php endif; ?>
-                                </div>
+                                    style="cursor: pointer; min-height: 42px;">
+                                <span id="kelasDropdownSelected" class="<?= !empty($currentKelas) ? 'text-body fw-medium' : 'text-secondary' ?>">
+                                    <?= !empty($currentKelas) ? 'Kelas ' . e($currentKelas) : '-- Pilih Kelas Perkuliahan --' ?>
+                                </span>
                             </button>
 
-                            <ul class="dropdown-menu w-100 shadow-lg border p-2 mt-1 rounded-3" id="kelasDropdownList" aria-labelledby="kelasDropdownBtn">
+                            <ul class="dropdown-menu w-100 shadow border p-1 mt-1 rounded-3" id="kelasDropdownList" aria-labelledby="kelasDropdownBtn">
                                 <?php foreach ($allowedKelas as $k): 
                                     $isSelected = ($currentKelas === $k);
                                 ?>
-                                    <li class="mb-1">
+                                    <li>
                                         <button type="button" 
-                                                class="dropdown-item kelas-dropdown-item rounded-2 p-2.5 d-flex align-items-center justify-content-between <?= $isSelected ? 'is-selected active bg-primary text-white' : '' ?>"
+                                                class="dropdown-item kelas-dropdown-item rounded-2 py-2 px-3 d-flex align-items-center justify-content-between <?= $isSelected ? 'is-selected' : '' ?>"
                                                 data-kelas="<?= e($k) ?>"
                                                 onclick="selectKelas('<?= e(addslashes($k)) ?>')">
-                                            <div class="d-flex align-items-center gap-2.5">
-                                                <span class="avatar avatar-sm item-avatar <?= $isSelected ? 'bg-white text-primary' : 'bg-primary-lt text-primary' ?> rounded-2 fw-bold flex-shrink-0" style="width: 32px; height: 32px;">
-                                                    <i class="ti ti-school fs-2"></i>
-                                                </span>
-                                                <div class="text-start">
-                                                    <div class="item-title fw-bold <?= $isSelected ? 'text-white' : 'text-body' ?>">Kelas <?= e($k) ?></div>
-                                                    <div class="item-subtitle small <?= $isSelected ? 'text-white-50' : 'text-secondary' ?>">Program Studi <?= e(config('prodi', 'Teknologi Informasi')) ?></div>
-                                                </div>
-                                            </div>
-                                            <div class="d-flex align-items-center gap-2 item-status">
+                                            <span class="d-flex align-items-center gap-2">
+                                                <i class="ti ti-school fs-2 text-primary"></i>
+                                                <span class="fw-semibold item-title">Kelas <?= e($k) ?></span>
+                                            </span>
+                                            <span class="item-check-box">
                                                 <?php if ($isSelected): ?>
-                                                    <i class="ti ti-check text-white fs-2 item-check"></i>
+                                                    <i class="ti ti-check text-primary fs-2 item-check"></i>
                                                 <?php endif; ?>
-                                            </div>
+                                            </span>
                                         </button>
                                     </li>
                                 <?php endforeach; ?>
@@ -217,41 +234,18 @@ function selectKelas(kelasName) {
 
     const selectedContainer = document.getElementById('kelasDropdownSelected');
     if (selectedContainer) {
-        selectedContainer.innerHTML = 
-            '<span class="avatar avatar-sm bg-primary-lt text-primary rounded-2 flex-shrink-0" style="width: 28px; height: 28px;">' +
-                '<i class="ti ti-school fs-2"></i>' +
-            '</span>' +
-            '<span class="fw-semibold text-body">Kelas ' + kelasName + '</span>' +
-            '<span class="badge bg-primary-lt text-primary border border-primary-subtle ms-1">Program Studi <?= e(addslashes(config("prodi", "Teknologi Informasi"))) ?></span>';
+        selectedContainer.className = 'text-body fw-medium';
+        selectedContainer.textContent = 'Kelas ' + kelasName;
     }
 
     const items = document.querySelectorAll('#kelasDropdownList .kelas-dropdown-item');
     items.forEach(item => {
-        const isCurrent = item.getAttribute('data-kelas') === kelasName;
-        item.classList.toggle('active', isCurrent);
-        item.classList.toggle('bg-primary', isCurrent);
-        item.classList.toggle('text-white', isCurrent);
+        const isCurrent = (item.getAttribute('data-kelas') === kelasName);
         item.classList.toggle('is-selected', isCurrent);
 
-        const avatar = item.querySelector('.item-avatar');
-        if (avatar) {
-            avatar.className = 'avatar avatar-sm item-avatar rounded-2 fw-bold flex-shrink-0 ' + 
-                (isCurrent ? 'bg-white text-primary' : 'bg-primary-lt text-primary');
-        }
-
-        const title = item.querySelector('.item-title');
-        if (title) {
-            title.className = 'item-title fw-bold ' + (isCurrent ? 'text-white' : 'text-body');
-        }
-
-        const sub = item.querySelector('.item-subtitle');
-        if (sub) {
-            sub.className = 'item-subtitle small ' + (isCurrent ? 'text-white-50' : 'text-secondary');
-        }
-
-        const statusBox = item.querySelector('.item-status');
-        if (statusBox) {
-            statusBox.innerHTML = isCurrent ? '<i class="ti ti-check text-white fs-2 item-check"></i>' : '';
+        const checkBox = item.querySelector('.item-check-box');
+        if (checkBox) {
+            checkBox.innerHTML = isCurrent ? '<i class="ti ti-check text-primary fs-2 item-check"></i>' : '';
         }
     });
 }

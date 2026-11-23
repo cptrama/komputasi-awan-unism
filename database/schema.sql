@@ -1,4 +1,4 @@
--- Database schema for SINTA (Sistem Informasi Tugas)
+-- Database schema for SIPA (Sistem Informasi Pengumpulan Tugas)
 -- SQLite 3 with Foreign Keys enabled
 
 PRAGMA foreign_keys = ON;

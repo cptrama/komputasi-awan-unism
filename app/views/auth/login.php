@@ -4,8 +4,8 @@
     <a href="/login" class="d-inline-block mb-3 text-decoration-none">
         <img src="/assets/logo-unism.png" alt="Logo Universitas Sari Mulia" class="unism-brand-logo">
     </a>
-    <h1 class="h1 text-body fw-bold mb-1 tracking-tight" style="letter-spacing: 0.04em;">SINTA</h1>
-    <div class="text-secondary fs-3 fw-medium">(Sistem Informasi Tugas)</div>
+    <h1 class="h1 text-body fw-bold mb-1 tracking-tight" style="letter-spacing: 0.04em;">SIPA</h1>
+    <div class="text-secondary fs-3 fw-medium">(Sistem Informasi Pengumpulan Tugas)</div>
 </div>
 
 <div class="card card-md shadow-sm border login-auth-card" style="max-width: 440px; width: 100%; margin: 0 auto;">

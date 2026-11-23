@@ -1,7 +1,7 @@
 <?php
 /**
  * Front Controller
- * SINTA (Sistem Informasi Tugas)
+ * SIPA (Sistem Informasi Pengumpulan Tugas)
  */
 
 // 1. Set Timezone before any date logic

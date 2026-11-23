@@ -89,11 +89,9 @@
                     <!-- Brand -->
                     <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3 m-0 p-0">
                         <a href="<?= is_dosen() ? '/dosen' : (is_mahasiswa() ? '/dashboard' : '/login') ?>" class="d-flex align-items-center text-decoration-none text-reset" style="gap: 14px;">
-                            <span class="avatar bg-primary-lt text-primary rounded shadow-sm flex-shrink-0" style="width: 44px; height: 44px;">
-                                <i class="ti ti-cloud fs-1"></i>
-                            </span>
+                            <img src="/assets/logo-unism.png" alt="Logo Universitas Sari Mulia" class="flex-shrink-0" style="height: 42px; width: auto; object-fit: contain;">
                             <div class="d-flex flex-column text-start justify-content-center" style="gap: 4px;">
-                                <span class="fw-bold fs-3 text-dark" style="line-height: 1.25;"><?= e(config('app_name')) ?></span>
+                                <span class="fw-bold fs-3 text-body" style="line-height: 1.25;"><?= e(config('app_name')) ?></span>
                                 <span class="text-secondary small" style="font-size: 0.78rem; line-height: 1.25;"><?= e(config('mata_kuliah', 'Komputasi Awan')) ?> &bull; Semester <?= e(config('semester')) ?> (<?= e(config('tahun_ajar')) ?>)</span>
                             </div>
                         </a>

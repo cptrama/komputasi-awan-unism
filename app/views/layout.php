@@ -127,12 +127,6 @@
                                         <i class="ti ti-user text-primary fs-2"></i>
                                         <span>Profil Saya</span>
                                     </a>
-                                    <?php if (!is_dosen()): ?>
-                                        <a href="/ganti-password" class="dropdown-item d-flex align-items-center gap-2">
-                                            <i class="ti ti-key text-secondary fs-2"></i>
-                                            <span>Ganti Password</span>
-                                        </a>
-                                    <?php endif; ?>
                                     <div class="dropdown-divider"></div>
                                     <button type="button" class="dropdown-item text-danger d-flex align-items-center gap-2 w-100" data-bs-toggle="modal" data-bs-target="#logoutConfirmModal">
                                         <i class="ti ti-logout fs-2"></i>

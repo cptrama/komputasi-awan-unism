@@ -4,11 +4,8 @@
     <a href="/login" class="d-inline-block mb-3 text-decoration-none">
         <img src="/assets/logo-unism.png" alt="Logo Universitas Sari Mulia" class="unism-brand-logo">
     </a>
-    <h1 class="h2 text-dark fw-bold mb-1 lh-base"><?= e(config('app_name')) ?></h1>
-    <div class="d-flex align-items-center justify-content-center gap-2 mt-2">
-        <span class="badge bg-primary text-white"><?= e(config('mata_kuliah', 'Komputasi Awan')) ?></span>
-        <span class="badge bg-secondary text-white">Semester <?= e(config('semester')) ?></span>
-    </div>
+    <h1 class="h1 text-body fw-bold mb-1 tracking-tight" style="letter-spacing: 0.04em;">SINTA</h1>
+    <div class="text-secondary fs-3 fw-medium">(Sistem Informasi Tugas)</div>
 </div>
 
 <div class="card card-md shadow-sm border login-auth-card" style="max-width: 440px; width: 100%; margin: 0 auto;">

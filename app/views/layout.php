@@ -6,9 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     
     <!-- Primary SEO & Title -->
-    <title><?= e(!empty($title) ? $title . ' - ' . config('app_name') : config('app_name')) ?></title>
+    <title><?= e(!empty($title) ? (str_contains($title, config('app_name')) ? $title : $title . ' - ' . config('app_name')) : config('app_name')) ?></title>
     <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
-    <meta name="description" content="Sistem Informasi Pengumpulan Tugas & Materi Kuliah <?= e(config('mata_kuliah', 'Komputasi Awan')) ?>, Program Studi Teknologi Informasi, Semester <?= e(config('semester')) ?> <?= e(config('tahun_ajar')) ?>.">
+    <meta name="description" content="<?= e(config('app_name')) ?> & Materi Kuliah <?= e(config('mata_kuliah', 'Komputasi Awan')) ?>, Program Studi Teknologi Informasi, Semester <?= e(config('semester')) ?> <?= e(config('tahun_ajar')) ?>.">
     <meta name="author" content="Program Studi <?= e(config('prodi')) ?>">
     <meta name="application-name" content="<?= e(config('app_name')) ?>">
     

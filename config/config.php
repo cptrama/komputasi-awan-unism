@@ -1,11 +1,11 @@
 <?php
 /**
  * Konfigurasi Umum Aplikasi
- * Sistem Informasi Pengumpulan Tugas Mahasiswa
+ * SINTA (Sistem Informasi Tugas)
  */
 
 return [
-    'app_name' => 'Sistem Informasi Pengumpulan Tugas',
+    'app_name' => 'SINTA (Sistem Informasi Tugas)',
     'app_env' => 'production', // 'development' or 'production'
     'timezone' => 'Asia/Makassar',
     'tahun_ajar' => '2026/2027',
